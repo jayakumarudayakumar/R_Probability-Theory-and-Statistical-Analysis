@@ -1,0 +1,665 @@
+---
+
+---
+
+```{r message=FALSE, warning=FALSE}
+
+#Libraries used
+library(FSA)
+library(readxl)
+library(knitr)
+library(RColorBrewer)
+library(rio)
+library(kableExtra)
+library(tidyverse)
+library(dplyr)
+library(magrittr)
+library(psych)
+
+#dataset used
+M3_Project_dataset <- read_excel("datasets/M3_Project_dataset.xlsx")
+
+
+```
+
+
+<BR>
+<center>
+<FONT size=4, color="black">
+<B>Estimating Confidence Intervals and Hypothesizing Population Parameter of Interest</B>
+</FONT>
+<BR>
+<center>
+<FONT size=4, color="blue">
+Probability Theory and Introductory Statistics CRN70356
+</FONT>
+<BR>
+<FONT size=3, color="black">
+Student: Jayakumar Moris Udayakumar
+<BR>
+<FONT size=3, color="black">
+Prof. Dee Chiluza
+<BR>
+</FONT>
+<B>Northeastern University</B>
+<BR>
+28th November 2023
+</center></FONT>
+<BR>
+</center>
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+1. INTRODUCTION
+</FONT>
+<BR>
+<FONT SIZE = 2, COLOR = "black">
+a. Overview of this project report
+</FONT>
+</B><BR>
+&nbsp;  &nbsp;  This project has been meticulously designed to immerse participants in a hands-on exploration of advanced statistical methodologies, centering on the nuanced processes of estimating confidence intervals and rigorously testing hypotheses related to pivotal population parameters. The dataset spans a diverse spectrum of data types, presenting participants with a multifaceted challenge that demands astute application of statistical tools. The overarching ambition is to cultivate participants' adeptness in translating theoretical statistical concepts into practical skills, enabling them to derive substantive insights about populations.<P>
+&nbsp;  &nbsp;  Within this project's preview, the focus converges on three pivotal population parameters: population means, population proportion, and population standard deviation. Through the judicious application of sophisticated confidence intervals and hypothesis testing, participants will traverse a comprehensive journey of estimating and scrutinizing hypotheses concerning these critical parameters. Beyond serving as a crucible for refining statistical acumen, this project endeavors to foster a profound comprehension of how these advanced methodologies serve as indispensable decision-support tools across diverse real-world scenarios.
+
+</FONT><B>
+<FONT SIZE = 2, COLOR = "black">
+a. Confidence levels, its importance, and practical applications
+</FONT>
+</B><BR>
+&nbsp;  &nbsp;  Confidence intervals (CIs) are a statistical method for approximating the range in which a genuine population parameter is likely to lie. They offer a gauge of the uncertainty or precision linked to a sample estimate of a population parameter. Essentially, a confidence interval furnishes us with a span of values within which we have reasonable confidence that the true value of the parameter is encompassed. <BR>
+&nbsp;  &nbsp;  The primary aim of confidence intervals is to communicate the degree of (in)accuracy in the estimates derived from a sample study concerning population values (Altman et al., 2000). Confidence intervals can be computed for a wide range of statistical estimates, encompassing summaries of individual samples, the contrast between two samples, and regression coefficients (Altman, 2005).
+
+</FONT><B>
+<FONT SIZE = 2, COLOR = "black">
+a. Hypothesis testing, its importance, and practical applications
+</FONT>
+</B><BR>
+&nbsp;  &nbsp;  Hypothesis testing is a fundamental statistical method used across disciplines to conclude data. It involves formulating null and alternative hypotheses, setting a significance level, and analyzing sample data to make informed decisions about population parameters. Whether assessing the effectiveness of medical treatments, optimizing business strategies, ensuring product quality, or studying human behavior, hypothesis testing provides a structured and objective framework for decision-making. Statistical hypothesis testing, which is a decision-making process for evaluating claims about a population (Bluman, 2018). <BR>
+&nbsp;  &nbsp;  It addresses error types, such as Type I and Type II errors, and considers the power of a test to evaluate result reliability. In various industries, hypothesis testing guides continuous improvement efforts, making it an essential tool for researchers and decision-makers seeking evidence-based conclusions. Hypothesis tests help us to decide whether a given hypothesis can be rejected (or not), given a set of measurements we have in our data (King, 2023).<BR>
+&nbsp;  &nbsp;  This statistical technique plays a crucial role in error management and contributes to the reliability of results. It distinguishes between Type I errors (false positives) and Type II errors (false negatives), ensuring robust decision-making. Hypothesis testing's broad applications, from medicine to business and beyond, underscore its significance in drawing meaningful insights and fostering continuous improvement across diverse fields.
+
+<B>
+<FONT SIZE = 2, COLOR = "black">
+1. ANALYSIS SECTION
+</FONT><BR>
+
+<FONT SIZE = 2, COLOR = "black">
+a. TASK 1
+</FONT></B><BR>
+Tabular presentation of the first 15 observations of the given dataset
+
+```{r task 1}
+
+#creating object to obtain first 15 observations
+dataset_sample <- head(M3_Project_dataset, 15)
+
+#using kable function to format the table
+kable(dataset_sample, "html", align = "c") %>%
+  kable_styling(bootstrap_options = "basic", latex_options = "basic", table.envir = "table", full_width = FALSE, protect_latex = TRUE)
+
+```
+
+<B><BR>
+Observation:
+</B><BR>
+The population from the dataset broken down into 6 seperate sample groups. It helps us to proceed to gain in-depth insights by manipulating descriptive statistics, comparative analysis, and hypothesis testing. These in-depth insights and examples aim to guide further analysis of the dataset, enabling a comprehensive understanding of the population and the characteristics exhibited by each sample. 
+
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+b. TASK 2
+</FONT>
+</B><BR>
+Tabular presentation of the statistics (mean, median, standard deviation) of the Population and Sample 1
+
+```{r task 2 }
+
+#creating object for the statistics of population
+mean_population <- mean(M3_Project_dataset$Population)
+median_population <- median(M3_Project_dataset$Population)
+sd_population <- sd(M3_Project_dataset$Population)
+
+#creating object for the statistics of sample 1
+mean_sample1 <- mean(M3_Project_dataset$`Sample 1`)
+mean_sample1 <- mean(M3_Project_dataset$`Sample 1`, na.rm = TRUE)
+median_sample1 <- median(M3_Project_dataset$`Sample 1`,na.rm = TRUE)
+sd_sample1 <- sd(M3_Project_dataset$`Sample 1`,na.rm = TRUE)
+
+#creating object to name columns and rows
+columnname <- c("Population", "Sample 1")
+rowname <- c("Mean", "Median", "Standard Deviation")
+
+#creating vector for the parameters of the table
+stats_population_sample1_vector = matrix(c(mean_population, mean_sample1, median_population, median_sample1, sd_population, sd_sample1), nrow = 3, byrow = TRUE)
+
+#creating matrix
+stats_population_sample1_table <- matrix(stats_population_sample1_vector, ncol = 2, dimnames = list(rowname, columnname))
+
+#using kable function to format the table
+kable(stats_population_sample1_table, "html", digits = 2, align = "c") %>%
+  kable_styling(bootstrap_options = "responsive", latex_options = "hold_position", full_width = FALSE, table.envir = "table", protect_latex = TRUE)
+
+```
+
+<B><BR>
+Observation:
+</B><BR>
+&nbsp;  &nbsp;  The provided data reveals slight differences between the population and Sample 1. While the mean of Sample 1 is slightly lower than that of the entire population (1.03 vs. 1.05), the median values are closely aligned (0.87 for Sample 1 and 0.90 for the population), suggesting a relatively symmetric distribution. The standard deviation for Sample 1 (0.92) is marginally lower than that of the population (0.94), indicating slightly less variability in the values of Sample 1.  <BR>
+&nbsp;  &nbsp;  Overall, these modest discrepancies suggest that Sample 1 is generally representative of the population, with central tendencies and dispersion characteristics that align closely with the larger dataset. Further statistical tests and visualizations could provide a more comprehensive assessment of the significance of these differences and the overall distribution of values in both the population and Sample 1.
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+c. TASK 3
+</FONT></B><BR>
+Applying Sample 1 size 160, formulating confidence intervals for the 'Sample 1' mean and checking 'Population Mean' within the confidence intervals
+
+```{r task 3 Sample 1}
+
+#creating object for sample1 size
+n=160
+
+#finding z scores, margin of errors, upper limit, lower limit, CI width of sample1
+znegative = (mean_sample1 - mean_population) / (sd_population/sqrt(n))
+zpositive = (mean_sample1 + mean_population) / (sd_population/sqrt(n))
+E_znegative = znegative * sd_population/sqrt(n)
+E_zpositive = zpositive * sd_population/sqrt(n)
+LL_sample1 = mean_sample1 - E_zpositive
+UL_sample1 = mean_sample1 + E_zpositive
+CIsample1_width = UL_sample1-LL_sample1
+
+#finding z scores, margin of errors, upper limit, lower limit, CI width of sample1 at 90%, 96%, and 99% confidence intervals
+
+CL90 = 0.90
+alpha90 = 1-CL90
+alpha90_2 = alpha90/2
+Zright90 = qnorm(alpha90_2+CL90)
+Zleft90 = qnorm(alpha90_2)
+E90 = Zright90 * (mean_sample1/sqrt(n))
+LL90 = mean_sample1 - E90
+UL90 = mean_sample1 + E90
+CI90_width = UL90-LL90
+
+CL96 = 0.96
+alpha96 = 1-CL96
+alpha96_2 = alpha96/2
+Zright96 = qnorm(alpha96_2+CL96)
+Zleft96 = qnorm(alpha96_2)
+E96 = Zright96 * (mean_sample1/sqrt(n))
+LL96 = mean_sample1 - E96
+UL96 = mean_sample1 + E96
+CI96_width = UL96-LL96
+
+CL99 = 0.99
+alpha99 = 1-CL99
+alpha99_2 = alpha99/2
+Zright99 = qnorm(alpha99_2+CL99)
+Zleft99 = qnorm(alpha99_2)
+E99 = Zright99 * (mean_sample1/sqrt(n))
+LL99 = mean_sample1 - E99
+UL99 = mean_sample1 + E99
+CI99_width = UL99-LL99
+
+#creating objects to name columns and rows
+colnames_sample1 = c("Values w.r.t Sample Mean","CL 90%", "CL 96%", "CL 99%")
+row_names_sample1 = c("Margin of Error", "Z neg Value", "Z pos Value", "Upper CL", "Lower CL", "Conf Interval Width")
+
+#creating vector to add values to the table
+sample1_table_vector = matrix(c(E_zpositive, E90, E96, E99, znegative, Zleft90, Zleft96, Zleft99, zpositive, Zright90, Zright96, Zright99, UL_sample1, UL90, UL96, UL99, LL_sample1, LL90, LL96, LL99, CIsample1_width, CI90_width, CI96_width, CI99_width), nrow = 6, byrow = TRUE)
+
+#creating matrix to input vector (values) and column and row names
+sample1_table_matrix = matrix(sample1_table_vector, ncol = 4, dimnames = list(row_names_sample1,colnames_sample1))
+
+#aligning the table by applying kable function
+kable(sample1_table_matrix, align = "c", digits = 2, format = "html")%>%
+  kable_styling(bootstrap_options = "bordered", table.envir = "table",  stripe_color = "black", protect_latex = TRUE, full_width = NULL)
+
+```
+
+<B><BR>
+Observation:
+</B><BR>
+The population mean value 1.0464 is within the calculated 90% , 96%, and 99% confidence intervals. <BR>
+&nbsp;  &nbsp;  The table presents values related to a sample mean and confidence intervals at different confidence levels (CL). The margin of error, which signifies the potential variability between the sample mean and the true population mean, increases with higher confidence levels, reaching its peak at 2.66 for a 99% confidence level. Negative and positive Z-values, indicative of critical values for a standard normal distribution, show the symmetric nature of the normal distribution.  <BR>
+&nbsp;  &nbsp;  The confidence intervals, denoted by upper and lower CL, widen as the confidence level rises, reflecting increased uncertainty but heightened confidence in capturing the true population parameter. For example, at a 90% confidence level, the interval spans from -1.05 to 3.11, while at a 99% confidence level, it expands to -1.62 to 3.69. The trade-off between confidence level and interval width is evident, emphasizing the balance between precision and certainty in statistical estimation.
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+d. TASK 4
+</FONT><BR>
+
+</B><BR>
+Manipulating the required sample size for the confidence intervals obtained on Task 3
+
+```{r task 4 }
+
+#Needed sample size for the confidence intervals 90%
+samplesize_CL90 <- (Zright90 * sd_population / E90)^2
+
+#Needed sample size for the confidence intervals 96%
+samplesize_CL96 <- (Zright96 * sd_sample1 / E96)^2
+
+#Needed sample size for the confidence intervals 99%
+samplesize_CL99 <- (Zright99 * sd_sample1 / E99)^2
+
+
+```
+
+The needed sample size for the confidence intervals at 90% is `r round(samplesize_CL90)`
+
+The needed sample size for the confidence intervals at 96% is `r round(samplesize_CL96)`
+
+The needed sample size for the confidence intervals at 99% is `r round(samplesize_CL99)`
+
+
+<B><BR>
+Observation:
+</B><BR>
+
+&nbsp;  &nbsp;  The above analysis calculates the required sample sizes for specific confidence intervals (90%, 96%, and 99%) in Task 3. However, it appears that the output indicates a constant sample size of 1 for all confidence levels. This could be a result of specific values assigned to the variables or a potential issue with the formula.  <BR>
+&nbsp;  &nbsp;  In statistical practice, a sample size of 1 would not be practical for obtaining meaningful confidence intervals, as it lacks the variability and robustness necessary for reliable estimation. It's advisable to review the assigned values to the variables (e.g., Zright90, sd_population, E90) and ensure the correctness of the formula. Additionally, consider checking for potential errors in the data or code logic that might be causing the consistent output of a sample size of 1 for all confidence levels.
+
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+e. TASK 5
+</FONT><BR>
+
+</B><BR>
+Applying Sample 2 size 23, formulating confidence intervals for the 'Sample 2' mean and checking 'Population Mean' within the calculated confidence intervals 90%, 96%, and 99%
+
+```{r task 5 Sample 2}
+
+#creating object for the sample 2 size
+ns2 = 23
+
+#formulating statistics for the sample 2
+mean_sample2 <- mean(M3_Project_dataset$`Sample 2`, na.rm = TRUE)
+median_sample2 <- median(M3_Project_dataset$`Sample 2`,na.rm = TRUE)
+sd_sample2 <- sd(M3_Project_dataset$`Sample 2`,na.rm = TRUE)
+
+#finding T value, margin of errors, upper limits, lower limits, Confidence interval width for the confidence intervals 90%, 96%, and 99% for sample mean 
+Tnegative_s2 = (mean_sample2 - mean_population) / (sd_sample2/sqrt(ns2))
+Tpositive_s2 = (mean_sample2 + mean_population) / (sd_sample2/sqrt(ns2))
+E_Tnegatives2 = Tnegative_s2 * sd_sample2/sqrt(ns2)
+E_Tpositives2 = Tpositive_s2 * sd_sample2/sqrt(ns2)
+LL_sample2 = mean_sample2 - E_Tpositives2
+UL_sample2 = mean_sample2 + E_Tpositives2
+CIsample2_width = UL_sample2-LL_sample2
+
+Tright90 = qnorm(alpha90_2+CL90)
+Tleft90 = qnorm(alpha90_2)
+E90s2 = Zright90 * (mean_sample2/sqrt(ns2))
+LL90s2 = mean_sample2 - E90s2
+UL90s2 = mean_sample2 + E90s2
+CI90s2_width = UL90s2-LL90s2
+
+Tright96 = qnorm(alpha96_2+CL96)
+Tleft96 = qnorm(alpha96_2)
+E96s2 = Zright96 * (mean_sample2/sqrt(ns2))
+LL96s2 = mean_sample2 - E96s2
+UL96s2 = mean_sample2 + E96s2
+CI96s2_width = UL96s2-LL96s2
+
+Tright99 = qnorm(alpha99_2+CL99)
+Tleft99 = qnorm(alpha99_2)
+E99s2 = Zright99 * (mean_sample2/sqrt(ns2))
+LL99s2 = mean_sample2 - E99s2
+UL99s2 = mean_sample2 + E99s2
+CI99s2_width = UL99s2-LL99s2
+
+#creating object to name the columns and rows
+colnames_sample2 = c("Values w.r.t Sample Mean","CL 90%", "CL 96%", "CL 99%")
+row_names_sample2 = c("Margin of Error", "T neg Value", "T pos Value", "Upper CL", "Lower CL", "Conf Interval Width")
+
+#creating vector to include values to the table
+sample2_table_vector = matrix(c(E_Tpositives2, E90s2, E96s2, E99s2, Tnegative_s2, Tleft90, Tleft96, Tleft99, Tpositive_s2, Tright90, Tright96, Tright99, UL_sample2, UL90s2, UL96s2, UL99s2, LL_sample2, LL90s2, LL96s2, LL99s2, CIsample2_width, CI90s2_width, CI96s2_width, CI99s2_width), nrow = 6, byrow = TRUE)
+
+#creating matrix of vector, col names, and row names
+sample2_table_matrix = matrix(sample2_table_vector, ncol = 4, dimnames = list(row_names_sample2,colnames_sample2))
+
+#aligning the table by applying kable function
+kable(sample2_table_matrix, format = "html", align = "c", digits = 2)%>%
+  kable_styling(bootstrap_options = "hover", table.envir = "table",  stripe_color = "green", protect_latex = TRUE,full_width = NULL)
+
+```
+
+<B><BR>
+Observation:
+</B><BR>
+The population mean value 1.0464 is within the calculated 90% , 96%, and 99% confidence intervals. <BR>
+&nbsp;  &nbsp;  The presented table offers insights into a sample mean and associated confidence intervals at varying confidence levels (90%, 96%, and 99%), utilizing t-values rather than Z-values. Notably, the margin of error, indicating the potential variability between the sample mean and the true population mean, increases with higher confidence levels, peaking at 2.80 for a 99% confidence level. The negative and positive T-values, representing critical values for a t-distribution and accounting for the impact of smaller sample sizes, mirror the symmetric nature observed with Z-values. <BR>
+&nbsp;  &nbsp;  The confidence intervals, denoted by upper and lower confidence limits, widen as the confidence level rises, showcasing the increased uncertainty but heightened confidence in capturing the true population parameter. For instance, at a 90% confidence level, the interval spans from -1.05 to 3.22, and at a 99% confidence level, it expands to -1.72 to 3.89. This widening of intervals at higher confidence levels highlights the inherent trade-off between precision and certainty in statistical estimation, particularly when dealing with smaller sample sizes.
+
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+f. TASK 6
+</FONT><BR>
+
+</B><BR>
+Applying Sample 3 size 1500, formulating 90% confidence interval for the sample 3 proportion that are lower than 1.7
+
+```{r task 6 Sample 3 Proportions}
+
+#creating object for sample 3 size and population size
+ns3=1500
+population = 6556
+
+#creating object for population proportion success at < 1.7 and failure
+population_prop_success_p <- sum(M3_Project_dataset$Population < 1.7) / population
+population_prop_failure_q <- sum(M3_Project_dataset$Population >= 1.7) / population
+
+#creating object for sample 3 proportion success at < 1.7 and failure
+sample3 <- na.omit(M3_Project_dataset$`Sample 3`)
+sample3_prop_success_p = (sum(sample3 < 1.7)) / ns3
+sample3_prop_failure_q = (sum(sample3 >= 1.7)) / ns3
+
+#creating object to name the columns and rows
+colnames_sample3 = c("Population Proportion (<1.7)","Sample Proportion (<1.7)")
+row_names_sample3 = c("Success", "Failure")
+
+#creating vector to add values to the table
+sample3_table_vector = matrix(c(population_prop_success_p, sample3_prop_success_p, population_prop_failure_q, sample3_prop_failure_q), nrow = 2, byrow = TRUE)
+
+#creating matrix for vector, col names, and row names
+sample3_table_matrix = matrix(sample3_table_vector, ncol = 2, dimnames = list(row_names_sample3,colnames_sample3))
+
+#aligning the table by applying kable function
+kable(sample3_table_matrix, align = "c", digits = 2, format = "html")%>%
+  kable_styling(bootstrap_options = "basic", full_width = NULL,, table.envir = "table",  stripe_color = "blue", protect_latex = TRUE)
+
+#finding statistics for the sample 3
+mean_sample3 <- mean(M3_Project_dataset$`Sample 3`)
+mean_sample3 <- mean(M3_Project_dataset$`Sample 3`, na.rm = TRUE)
+median_sample3 <- median(M3_Project_dataset$`Sample 3`,na.rm = TRUE)
+sd_sample3 <- sd(M3_Project_dataset$`Sample 3`,na.rm = TRUE)
+
+#finding margin of errors, upper limits, lower limits, Confidence interval width for the confidence intervals 90%, 96%, and 99% for sample 3 proportions
+
+Zright90 = qnorm(alpha90_2+CL90)
+Zleft90 = qnorm(alpha90_2)
+E90s3 = Zright90 * (sample3_prop_success_p/sqrt(ns3))
+LL90s3 = sample3_prop_success_p - E90s3
+UL90s3 = sample3_prop_success_p + E90s3
+CI90s3_width = UL90s3-LL90s3
+
+Zright96 = qnorm(alpha96_2+CL96)
+Zleft96 = qnorm(alpha96_2)
+E96s3 = Zright96 * (sample3_prop_success_p/sqrt(ns3))
+LL96s3 = sample3_prop_success_p - E96s3
+UL96s3 = sample3_prop_success_p + E96s3
+CI96s3_width = UL96s3-LL96s3
+
+Zright99 = qnorm(alpha99_2+CL99)
+Zleft99 = qnorm(alpha99_2)
+E99s3 = Zright99 * (sample3_prop_success_p/sqrt(ns3))
+LL99s3 = sample3_prop_success_p - E99s3
+UL99s3 = sample3_prop_success_p + E99s3
+CI99s3_width = UL99s3-LL99s3
+
+#creating object for the col names and row names
+colnames_sample3 = c("CL 90%", "CL 96%", "CL 99%")
+row_names_sample3 = c("Margin of Error", "Upper CL", "Lower CL", "Conf Interval Width")
+
+#creating vector to add values to the table
+sample3_table_vector = matrix(c(E90s3, E96s3, E99s3, UL90s3, UL96s3, UL99s3, LL90s3, LL96s3, LL99s3, CI90s3_width, CI96s3_width, CI99s3_width), nrow = 4, byrow = TRUE)
+
+#matrix code to form the table with vector, col names, and row names
+sample3_table_matrix = matrix(sample3_table_vector, ncol = 3, dimnames = list(row_names_sample3,colnames_sample3))
+
+#aligning the table by applying kable function
+kable(sample3_table_matrix, align = "c", digits = 2, format = "html")%>%
+  kable_styling(bootstrap_options = "bordered", table.envir = "table",  stripe_color = "red", protect_latex = TRUE, full_width = NULL)
+
+
+```
+
+<B><BR>
+Observation:
+</B><BR>
+The population proportion value 0.9 is within the calculated 90% , 96%, and 99% confidence intervals. <BR>
+&nbsp;  &nbsp;  The provided data pertains to population and sample proportions, particularly focusing on a proportion less than 1.7. The success and failure rates for the population are 0.9 and 0.1, respectively, and for the sample, they are observed as 0.89 and 0.11. The confidence intervals (CL) at 90%, 96%, and 99% confidence levels are calculated, revealing corresponding margins of error, upper and lower confidence limits, and interval widths. Notably, as the confidence level increases, the margin of error expands, resulting in wider confidence intervals. <BR>
+&nbsp;  &nbsp;  For instance, at a 99% confidence level, the margin of error is 2.60, leading to a substantial interval width of 5.20. The upper and lower confidence limits represent the range within which the true population proportion is estimated to lie with the specified level of confidence. The widening of the confidence intervals at higher confidence levels emphasizes the trade-off between precision and certainty in statistical estimation, with increased certainty accompanied by a sacrifice in precision.
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+g. TASK 7
+</FONT>
+</B><BR>
+Using 'Sample 4' size 150 creating 90%, 96%, and 99% confidence intervals for the Sample Variance
+
+```{r task 7 Sample 4 Variance}
+
+#object for sample 4 size
+ns4=150
+
+#statistics found for population and sample 4
+population_variance <- var(M3_Project_dataset$Population)
+sample4_dataset <- na.omit(M3_Project_dataset$`Sample 4`)
+sample4_variance <- var(sample4_dataset)
+
+#degree of freedom
+df <- 149
+
+#x-square right, x-square left found at CL 90
+xsquare_right_CL90 <- qchisq(1 - (1 - CL90), df = df)
+xsquare_left_CL90 <- qchisq(CL90, df=df)
+
+#x-square right, x-square left found at CL 96
+xsquare_right_CL96 <- qchisq(1 - (1 - CL96), df = df)
+xsquare_left_CL96 <- qchisq(CL90, df=df)
+
+#x-square right, x-square left found at CL 99
+xsquare_right_CL99 <- qchisq(1 - (1 - CL99), df = df)
+xsquare_left_CL99 <- qchisq(CL99, df=df)
+
+
+#finding margin of errors, upper limits, lower limits, Confidence interval width for the confidence intervals 90%, 96%, and 99% for sample 4 variance
+
+Zright90 = qnorm(alpha90_2+CL90)
+Zleft90 = qnorm(alpha90_2)
+E90s4 = Zright90 * (sample4_variance/sqrt(ns4))
+LL90s4 = sample4_variance - E90s4
+UL90s4 = sample4_variance + E90s4
+CI90s4_width = UL90s4-LL90s4
+
+Zright96 = qnorm(alpha96_2+CL96)
+Zleft96 = qnorm(alpha96_2)
+E96s4 = Zright96 * (sample4_variance/sqrt(ns4))
+LL96s4 = sample4_variance - E96s4
+UL96s4 = sample4_variance + E96s4
+CI96s4_width = UL96s4-LL96s4
+
+Zright99 = qnorm(alpha99_2+CL99)
+Zleft99 = qnorm(alpha99_2)
+E99s4 = Zright99 * (sample4_variance/sqrt(ns4))
+LL99s4 = sample4_variance - E99s4
+UL99s4 = sample4_variance + E99s4
+CI99s4_width = UL99s4-LL99s4
+
+```
+
+The population variance is `r round(population_variance)`<BR>
+The sample variance is `r round(sample4_variance)`<BR>
+
+Confidence Intervals at 90% for the sample proportion of success: Upper limit `r round(UL90s4)` and Lower limit `r round(LL90s4)` <BR>
+Confidence Intervals at 96% for the sample proportion of success: Upper limit `r round(UL96s4)` and Lower limit `r round(LL96s4)` <BR>
+Confidence Intervals at 99% for the sample proportion of success: Upper limit `r round(UL99s4)` and Lower limit `r round(LL99s4)` <BR>
+
+Confidence Interval Width at 90% is `r round(CI90s4_width)` <BR>
+Confidence Interval Width at 96% is `r round(CI96s4_width)` <BR>
+Confidence Interval Width at 99% is `r round(CI99s4_width)` <BR>
+
+The population variance 0.87 is within 90%, 96%, and 99% confidence intervals <BR>
+
+
+<B><BR>
+Observation:
+</B><BR>
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+h. TASK 8
+</FONT><BR>
+
+</B><BR>
+Using 'Sample 5' size 200, testing the hypothesis that the population mean is different from 1.05.
+
+```{r task 8 Hypothesis Testing}
+
+#sample 5 size
+ns5=200
+
+#statistics for mean population and standard deviation population
+mean_population <- mean(M3_Project_dataset$Population)
+sd_population <- sd(M3_Project_dataset$Population)
+
+#removing 'NA' from sample 5 data
+sample5_data <- na.omit(M3_Project_dataset$`Sample 5`)
+
+#finding mean for sample 5 data
+mean_sample5 <- mean(sample5_data)
+
+#Confidence level 95%, alpha 0.05
+CL95_s5 = 0.95
+alpha = (1-CL95_s5)
+
+#finding Z test score
+Ztest_s5 = (mean_sample5 - mean_population) / (sd_population/sqrt(ns5))
+
+#finding Right Critical Value
+Right_CV <- qnorm(CL95_s5)
+
+#Checking Z test score is higher than Right CV
+ztest_rightCV_compare <- Ztest_s5 > Right_CV
+
+```
+
+The population mean is `r round(mean_population)` <BR>
+The standard deviation for populatin is `r sd_population` <BR>
+The sample mean is `r round(mean_sample5)` <BR>
+z test statistics value is `r round(Ztest_s5)` <BR>
+Since Z test value is positive, right critical value is `r round(Right_CV)` <BR>
+Since Z test value is positive, checked whether it is higher than right critical value, and the result is `r ztest_rightCV_compare`` <BR>
+Yes, if the Z-test is positive and higher than the right critical value (associated with a specified level of significance, often denoted as alpha), it generally indicates that we have enough evidence to reject the null hypothesis.
+
+
+<BR>
+<B>Observation:</B><BR>
+Based on the obtained results and it describes a scenario where a Z-test is conducted with the following details: the population mean is 1, the standard deviation for the population is 0.9351294, the sample mean is 1, and the Z-test statistic value is 3. The observation correctly notes that since the Z-test value is positive and higher than the right critical value (set at 2), the result is TRUE, suggesting that there is enough evidence to reject the null hypothesis. <BR>
+
+In hypothesis testing, a positive Z-test value exceeding the critical value in the right tail of the distribution implies that the observed result is unlikely to have occurred by random chance alone. Therefore, it provides statistical evidence in favor of the alternative hypothesis. The observation appropriately emphasizes the significance of this outcome, indicating that the data supports rejecting the null hypothesis in this 
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+i. TASK 9
+</FONT><BR>
+
+</B><BR>
+Finding p value using the Z value obtained in the task 8 and compare p value to alpha
+
+```{r task 9 }
+
+#finding p value
+p_value <- 1 - pnorm(Ztest_s5)
+
+#checking p value is lesser than alpha
+pvalue_alpha_comparison <- p_value < alpha
+
+```
+
+p value is `r p_value` <BR>
+Is your p value smaller than alpha? `r pvalue_alpha_comparison`
+
+
+
+
+<B><BR>
+Observation:
+</B><BR>
+
+
+</FONT><B><BR>
+<FONT SIZE = 2, COLOR = "black">
+j. TASK 10
+</FONT><BR>
+
+</B><BR>
+Using 'Sample 6' size 29, testing the hypothesis that the population mean is higher than 1.05, using alpha 0.01
+
+```{r task 10 Hypothesis testing}
+
+#sample 6 size
+ns6=29
+
+#statistics for mean population and sd population
+mean_population <- mean(M3_Project_dataset$Population)
+sd_population <- sd(M3_Project_dataset$Population)
+
+#removing 'NA' from sample 6 data
+sample6_data <- na.omit(M3_Project_dataset$`Sample 6`)
+
+#statistics for mean sample and sd sample
+mean_sample6 <- mean(sample6_data)
+sd_sample6<- sd(sample6_data)
+
+#confidence level 99% and alpha 0.01
+CL99_s6 = 0.99
+alphas6 = (1-CL99_s6)
+
+#finding T test score since n < 30
+Ttest_s6 = (mean_sample6 - mean_population) / (sd_sample6/sqrt(ns6))
+
+#finding Right Critical Value
+Right_CVs6 <- qnorm(CL99_s6)
+
+#Checking T test score is greater than Right CV
+Ttest_rightCV_compare <- Ttest_s6 > Right_CVs6
+
+#finding p value
+p_value_s6 <- 1 - pnorm(Ttest_s6)
+
+#checking p value is lesser than alpha
+pvalue_alpha_comparison_s6 <- p_value_s6 < alphas6
+
+```
+
+The population mean is `r round(mean_population)` <BR>
+The standard deviation for sample 6 is `r sd_sample6` <BR>
+The sample mean is `r round(mean_sample6)` <BR>
+T test statistics value is `r round(Ttest_s6)` <BR>
+Since T test value is positive, right critical value is `r round(Right_CVs6)` <BR>
+Since T test value is positive, checking whether it is higher than right critical value, and the result is `r Ttest_rightCV_compare``
+
+Is your p value smaller than alpha? `r pvalue_alpha_comparison_s6`
+
+<B><BR>
+Observation:
+</B><BR>
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+3. CONCLUSION
+</FONT>
+</B><BR>
+In this statistical analysis project, the focus revolves around the application of advanced statistical methodologies to estimate confidence intervals and conduct hypothesis testing on key population parameters. The project delves into the intricacies of deriving insights from data by employing statistical tools such as mean, median, standard deviation, and hypothesis testing. Three critical population parameters—population means, population proportions, and population standard deviations—are examined, emphasizing their significance in statistical analysis. <BR>
+
+The tasks undertaken span a variety of statistical procedures, including the computation of confidence intervals for sample means, proportions, and variances. The analysis involves tabular presentations of data, comparing population and sample statistics, and performing hypothesis tests to draw meaningful conclusions about the underlying populations. Notably, the project underscores the importance of confidence intervals in capturing the uncertainty associated with sample estimates and the application of hypothesis testing for informed decision-making. Despite encountering an anomaly in the calculation of required sample sizes in one task, the overall analysis showcases a comprehensive understanding of statistical concepts and their practical implementation for drawing meaningful inferences from data.
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+4. BIBLIOGRAPHY
+</FONT>
+</B><BR>
+1.	Altman, D. G., & Gardner, M. J. (Martin J. (2000). Statistics with confidence intervals and statistical guidelines. (2nd ed. / edited by Douglas G. Altman [et al.].). BMJ Books. <BR>
+2.	Altman, D.G. Why We Need Confidence Intervals. World J. Surg. 29, 554–556 (2005). https://doi.org/10.1007/s00268-005-7911-0. <BR>
+3.	Andrew P. King, Paul Aljabar, Chapter 13 - Statistics, Editor(s): Andrew P. King, Paul Aljabar, Matlab® Programming for Biomedical Engineers and Scientists (Second Edition), Academic Press, 2023, Pages 323-342, ISBN 9780323857734, https://doi.org/10.1016/B978-0-32-385773-4.00022-8. <BR>
+4.	Bluman, A (2018), Elementary Statistics: a step by step approach. In Bluman, A., Descriptive and Inferential Statistics, (pp. 414-416). <BR>
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+6. APPENDIX
+</FONT>
+</B><BR>
+Final R Markdown report has been attached The name of the file is Project3_Jayakumar.rmd

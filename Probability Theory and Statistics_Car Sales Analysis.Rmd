@@ -1,0 +1,390 @@
+---
+---
+
+```{r libraryData, message=FALSE, warning=FALSE}
+
+#libraries used in this report
+library(readxl) #import excel files into R
+library(tidyverse) # API design, install core pkg from tidyverse in 1 cmd
+library(dplyr) #provides uniform set of verbs that helps data manipulation
+library(magrittr) #For the pipes %>%, f(x) with x %>% f, sequencing
+library(knitr) # for kable( ), intermingle code with prose in 1 document
+library(RColorBrewer) #creates nice looking palettes for graphs,maps,etc.
+library(kableExtra) #add extra features to kable output
+library(rio) #to make data file Inp/Out easier
+library(psych) #useful for basic data entry and descriptive analysis
+library(FSA) # tools and functions for fisheries and aquatic analysis
+
+#dataset used in this report
+M1data_carsales <- read_excel("datasets/M1data_carsales.xlsx")
+
+```
+
+<BR>
+<center>
+<FONT size=4, color="black">
+<B>Car Sales - Project Report 1</B>
+</FONT>
+<BR>
+<center>
+<FONT size=4, color="blue">
+Probability Theory and Introductory Statistics_CRN 70356
+</FONT>
+<BR>
+<FONT size=3, color="black">
+Student: Jayakumar Moris Udayakumar
+<BR>
+<FONT size=3, color="black">
+Professor. Dee Chiluza
+<BR>
+</FONT>
+<B>Northeastern University</B>
+<BR>
+12th November 2023
+</center></FONT>
+<BR>
+</center>
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+INTRODUCTION
+</FONT>
+</B><BR>
+
+<B>
+<FONT SIZE = 2, COLOR = "black">
+A. Overview of Global Car Sales Market:
+</FONT>
+</B><BR>The global automotive industry is undergoing and foreseeing a revolutionary transformation ever before. This is due to some driving trends, such as technological advancement, sustainability, electrification, autonomous driving, connectivity, and diverse mobility (Paul Gao et al., 2016). These driving forces can leverage one another with their influence and eventually significantly impact the automation industry's growth. According to the McKinsey & Company report by Paul Gao et al., 2016, overall global car sales continue to grow; however, the global annual growth rate drop from 3.6 percent to approx. 2 percent by 2030.
+
+<B>
+<FONT SIZE = 2, COLOR = "black">
+B. Importance of discrete and continuous probability distributions
+</FONT>
+</B><BR>
+    A probability distribution is to evaluate the probability of a random variable. It can be discrete or continuous. The discrete probability distribution computes countable distinct possible values, whereas the continuous probability distribution computes infinite possible values in a specified range. In discrete, probabilities can be designated to specific values; however, in continuous, probability designated to a particular value is null since its values are infinite (Bluman, 2018).<BR>
+    With respect to applications, the discrete probability distribution is straightforward, easy to compute, and best suitable for countable data. A continuous probability distribution can analyze and predict complex data such as measurements, mathematic and scientific research, and performance evaluations.
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+C. About dataset used in this report:
+</FONT>
+</B><BR>
+Dataset used to build this report is "M1data_carsales". The dataset contains the history of carsales in India between 1998 and 2019. It contains 12 variables and details of 4,949 cars from various automotive companies.
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 1
+</FONT>
+</B>
+<BR>
+Descriptive statistics summary of dataset "M1data_carsales" for variables Efficiency, Power_bhp, Seats, Km, Price)
+<BR>
+```{r}
+
+#using dplyr to select specific variables from dataset, using psych with describe() to create summary statistics and descriptions of dataframes with both numerical and categorical variables
+M1data_carsales %>%
+  dplyr::select(Efficiency, Power_bhp, Seats, Km, Price) %>%
+  psych::describe()%>%
+  t()%>%
+  knitr::kable(align = "c", digits = 2, caption = "Descriptive Statistics Summary", format = "html")%>%
+    kable_styling(bootstrap_options = "basic", stripe_color = "black", table.envir = "table", full_width = TRUE, protect_latex = FALSE, font_size = 10)
+
+```
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR>The above summary table outlines the descriptive statistical measures of the variables efficiency, seats, Km, Power_bhp, and price. It describes the measure of central tendency and dispersion, skewness, kurtosis, etc. The output is so comprehensive interms of understanding the density distribution shape, central tendency, spread, and distribution of each variable.
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 2
+</FONT>
+</B><BR>
+Presenting barplot and piechart of each category of variables location and fueltyope, respectively.
+
+```{r}
+
+#creating an object to pick variable from dataset using table()
+Location_freq <- table(M1data_carsales$Location)
+
+#creating a dataframe w.r.t variable location and its frequency
+Location_freq_dataframe <- data.frame(Location = names(Location_freq), Frequency = as.numeric(Location_freq))
+
+#using par() to organize chart presentation with 1x2 matrix
+par(mfcol=c(1,2))
+
+#creating barplot w.r.t location and frequency
+barplot(Location_freq_dataframe$Frequency, names.arg = Location_freq_dataframe$Location, col=brewer.pal(n=3,name = "Set2"),las = 1, horiz = TRUE, xlab = "Frequency", xlim = c(0,max(Location_freq_dataframe$Frequency)*1.2), cex.main = 0.6, cex = 0.7, cex.lab = 0.8, cex.axis = 0.65)
+
+#assigning an object by picking a variable from dataset using table()
+fueltype_count <- table(M1data_carsales$FuelType)
+
+fueltype <- M1data_carsales$FuelType
+
+#determining percentage of car sales on each category of variable
+Fueltype_percentage <- round(((fueltype_count / sum(fueltype_count))*100), 1)
+
+#creating dataframe of variable fuel type and its percentage
+Fueltype_percentage_dataframe <- data.frame(Fueltype = names(Fueltype_percentage), Percentage = as.numeric(Fueltype_percentage))
+
+#using par() to organize graph presentation
+par(mai=c(0.4,0.1,0.4,0.1))
+
+#creating pie chart
+pie(Fueltype_percentage, labels = paste0(Fueltype_percentage, "%"), edges = 200, angle = 180, las =1, radius = 0.8, cex.axis = 1,cex = 0.5, col = brewer.pal(8,"Set3"), cex.main = 0.6, cex.axis = 0.65)
+
+legend("bottomright", c("CNG","Diesel","Gasoline","LPG"), cex= 0.5, fill=brewer.pal(9,"Set3"))
+
+```
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+<BR>
+Barplot:</B> The barplot presents the frequencies of each category of variable "Location" in the dataset carsales in India. As listed in the barplot, 11 Indian cities carsales summary captured in the dataset. Based on the illustration, it is understandable that the city 'Mumbai' top the list with highest frequency of sales compared to other cities. Consecutively, the city 'Hyderabad' stands at the second spot, and followed by Pune and Kolkata as both sharing the third highest carsales market in the country. Interestingly, the city 'Ahmedabad' is at the lowest spot with very minimal sales compared to other cities in India.
+<BR><B>Piechart:</B> The piechart presented in the above chart displays the percentages of each category of variable 'fuel type'. The fuel types captured in the dataset are, CNG, Diesel, Gasoline, and LPG. As illustrated in the piechart, the total CNG cars contributed to the indian market is 1.1%, LPG at 0.2%, Dieset at 47.2%, and Diesel at 51.5%. The highest moving category is diesel cars and followed by Gasoline. The CNG and LPG fuel type cars are not having major market size in India, based on the given dataset.
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 3
+</FONT>
+</B><BR>For variable 'Owner', presenting frequencies, cumulative frequencies, percentages, and cumulative percentages.
+
+```{r}
+
+#creating table for variable 'Owner' and its freq
+Owner_freq <- table(M1data_carsales$Owner)
+
+#tansposing table using dataframe
+Owner_freq_dataframe <- data.frame(Owner = names(Owner_freq), Frequency = as.numeric(Owner_freq))
+
+#using mutate() to add columns CumFreq, Percentage, CumPercentage
+Owner_freq_dataframe <- Owner_freq_dataframe %>%
+  mutate(
+    CumFrequency = cumsum(Frequency),
+    Percentage = round((Owner_freq / sum(Owner_freq)*100), digits = 2),
+    CumPercentage = cumsum(Percentage)
+  )
+
+#using knitr::kable() to present the table
+kable(Owner_freq_dataframe, align = "c", caption = "Carsales w.r.t Owner and their frequencies") %>%
+  kable_styling(full_width = NULL, bootstrap_options = "basic", table.envir = "table", protect_latex = TRUE, position = "center")
+
+```
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR>Based on my observation from the above summary, I can understand that the majority of owners in the Indian car sales market is 'First' hand owners contributing to 59.02%. Consecutively, second and fourth hand owners with the contribution of 18.51% and 15.80%, respectively. Interestingly, 'Third' hand owners contributes to 6.67% at the lowest. By and large, the above summary indicates the lifecycle of carsales market and ownership dynamics.
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 4
+</FONT>
+</B><BR>Density distribution of variable 'Kilometers' interms of mean and standard deviation.
+
+```{r Km, fig.align='center'}
+
+#creating objects to store mean and standard deviation
+
+Km <- M1data_carsales$Km
+km_mean <- mean(M1data_carsales$Km)
+km_sd   <- sd(M1data_carsales$Km)
+
+#creating object to store the value 2.4 SD above the mean
+sd2.4A = km_mean + (2.4*km_sd)
+#creating object to store the value 3.1 SD below the mean
+sd3.1B = km_mean - (3.1*km_sd)
+
+#using par() to organize the chart
+par(mar=c(5,5,5,5)+0.1)
+
+#using density() and plot() to present a density curve for Km
+Km %>%
+  density(adjust = 2) %>%
+  plot(main = "", xlab = "Kilometers", xlim = c(-50000,max(Km)*1.1), ylab = "", las =1, ylim = c(0,0.0000195), cex.axis = 0.6)
+
+#using abline() to add vertical for the mean
+abline(v=c(sd2.4A, km_mean, sd3.1B), col=c("red", "blue", "red"))
+text(x=km_mean-2, y=0.0000155, round(km_mean,2), cex=0.8, srt=90, adj = c(1,0))
+text(x=sd2.4A-2, y=0.0000155, round(sd2.4A,2), cex=0.8, srt=90, adj = c(1,0))
+text(x=sd3.1B-2, y=0.0000155, round(sd3.1B,2), cex=0.8, srt=90, adj = c(1,0))
+
+```
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR> The density distribution of variable 'Kilometers' is a perfect resemblance of the descriptive summary we have observed in the task 1. As mean stands at 55809.14, 2.4 SD above the mean stands at 124843.21 and 3.1 SD below the mean stands at -33359.86. The skewness is almost at the center and distribution is wide above the mean.
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 5
+</FONT>
+</B><BR> Horizontal boxplot and Histogram to display the data distribution of continuous variable 'Kilometers'
+
+```{r}
+
+#using par() to organize graph presentation
+par(mfrow=c(2,1), mar=c(2,3,2,3))
+
+#presenting histogram to display the data distribution of variable 'Km'
+hist(Km, main = "Histogram of variable 'Km' in carsales", col = brewer.pal(8,"Set1"), las = 1, xlim = c(0,max(Km)*1.2), ylim = c(0,900), cex = 0.6, cex.main = 0.6, cex.lab = 0.6, cex.axis = 0.6)
+
+#presenting box plot to display the data distribution of variable 'Km'
+boxplot(Km, main = "Boxplot of variable 'Km' in carsales", col = brewer.pal(7,"Set2"),horizontal = T, cex = 0.6, cex.main = 0.6, cex.lab = 0.6, cex.axis = 0.6, ylim = c(0,max(Km)*1.05),las = 1)
+
+```
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR> The histogram illustrates the distribution of continuous variable 'Km' by clearing highlighting the major contributing range. The boxplot represents the quartiles of variable 'Km' distribution. The lowest and highest distrubution range is 0 and 125k; 1st and 3rd quartile is much closer to the median. There are outliers above 125k and last towards 150k.
+
+<BR>
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 6
+</FONT>
+</B></BR> Presenting histogram and boxplot of variable 'Price' carsales
+
+```{r}
+
+#using par() to organize graph presentation
+par(mfrow=c(2,1), mar=c(2,3,2,3))
+
+#presenting histogram to display the data distribution of variable 'Price'
+hist(M1data_carsales$Price, main = "Histogram of variable 'Price' in carsales", col = brewer.pal(8,"Set2"), las = 1, xlim = c(0,max(M1data_carsales$Price)*1.14), ylim = c(0,1200), cex = 0.6, cex.main = 0.6, cex.lab = 0.6, cex.axis = 0.6)
+
+#presenting boxplot to display the data distribution of variable 'Price'
+boxplot(M1data_carsales$Price, main = "Boxplot of variable 'Price' in carsales", col = brewer.pal(7,"Set1"),horizontal = T, cex = 0.6, cex.main = 0.6, cex.lab = 0.6, cex.axis = 0.6, ylim = c(0,max(M1data_carsales$Price)*1.05),las = 1)
+
+```
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR> The histogram of variable 'Price' from the dataset illustrates that highest price value ranges merely more or less 5000, whereas lowest price value ranges merely more or less 25,000. Most importantly, majority of car price is between the range of 2000 and 12000. On the other hand, while observing boxplot, we can notice that the 0th quartile or lowest range is merely 1000 and highest range or 100th quartile is merely lesser than 20k. There are heavy density of population between 4000 and 12000. And the outliers stands above highest range, between 19-20k and 25-26k.
+
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 7
+</FONT>
+</B> Presenting boxplot to display price distribution per owner.
+
+```{r}
+
+#using par() to organize graph
+par(mai=c(0.8,0.8,0.8,0.8))
+
+#presenting boxplot to illustrate price distribution per owner
+boxplot(M1data_carsales$Price ~ M1data_carsales$Owner, main = "Boxplot - Price distribution based on Owner", col = brewer.pal(7,"Set1"), horizontal = T, cex = 0.6, cex.main = 0.6, cex.lab = 0.6, cex.axis = 0.6, ylim = c(0,max(M1data_carsales$Price)*1.05),las = 1, ylab = "Owner", xlab = "Price")
+
+```
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR> The presented boxplot illustrates the distribution of variable 'Price' as per each category of variable 'Owner'. Based on the observation, 'Third' owner holds maximum range between 1st and 3rd quartile, compared to any other categories. The 'Fourth' Owner has the maximum outliers, whereas no other categories have any outliers at all. It describes that 'Fourth' owner category is so uneven and it drastically varies and hard to predict.
+
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 8
+</FONT>
+</B><BR>Presenting boxplot for the distribution of variable 'Km' with respect to each location
+
+```{r}
+
+#using par() to adjust chart dimensions
+par(mai=c(0.8,0.8,0.8,0.8))
+
+#presenting boxplot to illustrate 'Km' distribution in each location
+boxplot(M1data_carsales$Km ~ M1data_carsales$Location, main = "Boxplot - 'Km' distribution in each location in India", col = brewer.pal(7,"Set2"),horizontal = T, cex = 0.6, cex.main = 0.6, cex.lab = 0.6, cex.axis = 0.6, ylim = c(0,max(M1data_carsales$Km)*1.05),las = 1, ylab = "", xlab = "Km")
+
+
+```
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR> Based on the observation, we can understand that almost all the cities, except Pune and Chennai, have outliers beyond the maximum range. Density distribution of variable 'Km' is more or less similar almost all the cities, except Pune and Chennai since these two cities have covered maximum range. Most of the cities' range of 1st and 3rd quartile, stands at the range between 25k and 80k.
+
+
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 9
+</FONT>
+</B><BR>Presenting outcomes of code boxplot.stats() for variable 'Km'
+
+```{r}
+
+#presenting boxplot statistics for variable Kilometers
+boxplot.stats(Km)
+
+```
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR> The presented statistics displays statistical summary of variable 'Km'. The Oth quartile is 171, 1st quartile is 34994, Median is 54000, 3rd quartile is 72618, Maximum quartile value is 129000. The total population or number of observations is 4949. The confidence intervels is 53154.99 and 54845.01. The outliers of variable 'Km' presented in a series.
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+TASK 10
+</FONT>
+</B><BR>Presenting dotchart to display the quartile values for variable 'Km'
+
+```{r}
+#applying par() to adjust dimensions of the chart
+par(mai=c(0.9,0.9,0.9,0.9))
+
+#creating object to assign boxplot.stats for variable 'Km'
+Km_stats <- boxplot.stats(Km)$stats
+
+#presenting dot chart to display quartiles of variable 'Km' using code strategy boxplot.stats()$stats
+dotchart(Km_stats, main = "Dot chart - quartiles of variable 'Km'", xlim = c(0,max(Km)), xlab = "Km", pch = 18, cex = 0.8)
+
+```
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+Observation:
+</FONT>
+</B><BR> Here is the illustration of quartile values of variable 'Km' in the dotchart. The dots in the chart is the indication of the Oth quartile  171, 1st quartile 34994, Median 54000, 3rd quartile 72618, Maximum quartile value 129000.
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+CONCLUSION
+</FONT>
+</B><BR>
+The comprehensive statistical analysis of discrete and continuous variables from the dataset 'Carsales' of one of the largest global automotive markets in the world, India. Based on the illustrations and its observations presented in the report, it is understandable the carsales market between 1998 and 2019 have seen considerable growth and majority of the car ownership is with 'First' and 'Second' hand. Also, the price distribution is mostly in the range of 4k and 12k (1st and 3rd quartile); on the other hand, distribution of variable 'km' between the range of  30 and 60k (1st and 3rd quartile). Based on the fueltype analysis, the major market share is with diesel and gasoline fuel type cars. While observing the top cities with huge market size, Mumbai and Hyderabad stands at 1st and 2nd postiion, respectively.
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+BIBLIOGRAPHY
+</FONT>
+</B><BR>
+1. Paul Gao. V, Kaas. H, Mohr. D, Wee. D, 2016, Automotive revolution – perspective towards 2030, McKinsey & Company, URL: https://www.mckinsey.com/industries/automotive-and-assembly/our-insights/disruptive-trends-that-will-transform-the-auto-industry/de-DE
+2. Bluman, A (2018), Elementary Statistics: a step by step approach. In Bluman, A., Descriptive and Inferential Statistics, (pp. 3-4)
+
+<BR><B>
+<FONT SIZE = 2, COLOR = "black">
+APPENDIX
+</FONT>
+</B><BR>
+An R Markdown file has been attached to this report. The name of the file is Project1_Jayakumar.rmd
+<BR>

@@ -1,0 +1,499 @@
+---
+
+---
+
+```{r libraryData, message=FALSE, warning=FALSE}
+
+#libraries applied in this report
+library(magrittr)
+library(tidyverse)
+library(RColorBrewer)
+library(kableExtra)
+library(knitr)
+library(psych)
+library(rio)
+library(FSA)
+library(readxl)
+library(summarytools)
+
+#creating object for the dataset mpg
+fueleconomy_data <- data.frame(mpg)
+
+```
+
+<B>
+<FONT SIZE = 4, color = "blue">
+<center><BR>
+Correlation and Regression Analysis
+<BR>
+<FONT SIZE = 3, color = "black">
+Probability Theory and Introductory Statistics
+<BR>
+<FONT SIZE = 2, color = "black">
+Northeastern University
+<BR>
+<FONT SIZE = 2, color = "black">
+</B>
+Student: Jayakumar Moris Udayakumar
+<BR>
+<FONT SIZE = 2, color = "black">
+Instructor Name: Prof. Dee Chiluza, PhD
+<BR>
+<FONT SIZE = 2, color = "black">
+Date: 16th December 2023
+<BR></center>
+
+<BR>
+<FONT SIZE = 2, color = "black">
+<B>I. INTRODUCTION</B><BR>
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  a. Correlation and Linear Regression </B><BR>
+&nbsp;  In analytics, correlation analysis and linear regression analysis are the two crucial concepts for observing the relationship's existence, the strength of the relationship, the level of dependencies, etc. Regression analysis is one of the most important statistical tools that helps us assess the relationship between two or more variables in which at least one of them is independent (Riffenburgh, 2020). Correlation is the measure of association between two quantitative variables and helps to determine the correlation coefficients (Lalanne, 2017).<BR>
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  b. Simple and Multiple Regression Analysis </B><BR>
+&nbsp;  Simple regression analysis is the regression analysis that is performed between one dependent variable and one independent variable. The regression procedure uses the independent variable to predict the dependent variable (Carroll, 2023). Multiple regression analysis is performed between one dependent variable and a set of independent variables. Multiple regression analysis is the most widely used multivariate methodology to examine the causal relationships between the variables (Nayebi, 2020). <BR>
+&nbsp;  Practical applications in manufacturing: <BR>
+Some of the practical applications of simple and multiple regression analysis are, <BR>
+1.	Predicting vendor performance based on their on-time delivery. <BR>
+2.	Analyzing the significant factors that influence the inventory. <BR>
+3.	Determining the impact of system changes in the operations. <BR>
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  c. Hypothesis Testing - Regression Analysis </B><BR>
+&nbsp;  Hypothesis testing is a crucial statistical method used to evaluate the significance of relationships between variables. The null hypothesis posits no relationship (coefficients are zero), both for individual predictors and the overall model. The alternative hypothesis, on the other hand, suggests a meaningful association. <BR>
+&nbsp;  The test statistic, often based on t-distribution for individual coefficients and F-statistic for the entire model, is calculated to determine the probability of observing the data under the null hypothesis. A small p-value (typically below 0.05) leads to rejecting the null hypothesis, indicating a statistically significant relationship. Researchers then conclude that the observed associations in the regression model are unlikely to be due to chance. This process allows for rigorous assessment and inference about the validity of the regression results, providing a foundation for making meaningful interpretations and predictions. <BR>
+&nbsp;  Some of the practical applications are, <BR>
+1.	Effectiveness of new system implementation in the performance of the supply chain<BR>
+2.	Assessing the impact of a drug in the patient’s health<BR>
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  d. Two Sample Hypothesis Testing - Dependent Vs Independent Variables</B><BR>
+&nbsp;  Two-sample hypothesis testing delineates a critical dichotomy based on the interdependence of the samples under consideration. In the realm of independent samples testing, the scrutinized groups remain autonomous entities devoid of any inherent interrelation, making it apt for comparisons involving entirely discrete populations or disparate conditions within a single population. This paradigm finds resonance in scenarios where the observed phenomena lack mutual influence, typified, for instance, by the comparative assessment of mean test scores between students from divergent educational institutions. <BR>
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  e. Importance of the final project</B><BR>
+&nbsp;  The final project is always one of the critical tasks for all students since it measures all the learnings obtained by the students during the course period. It will help students to demonstrate their knowledge, skills, and experiences. <BR>
+&nbsp;  Significant milestones are <BR>
+1.	Students can recollect and revisit theoretical and practical concepts and share their understanding. <BR>
+2.	The final project must be performed with utmost seriousness to make sure that the report has the potential to be presented to the recruiters. <BR>
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  f. Advantages of using R for data analysis </B><BR>
+Extensive Community Support: <BR>
+1.	Large and active community of statisticians, data scientists, and researchers. <BR>
+2.	Abundant packages and libraries contributed by the community enhance analytical capabilities. <BR>
+Flexibility and Integration: <BR>
+1.	Versatile for diverse data analysis tasks, from manipulation to advanced modeling. <BR>
+2.	Seamless integration with other data science tools and platforms. <BR>
+Reproducibility and Transparency: <BR>
+1.	Script-based coding allows for systematic documentation of analyses. <BR>
+2.	Facilitates reproducibility, collaboration, and scrutiny of results. <BR>
+Credibility and Rigor: <BR>
+1.	Transparent analytical processes contribute to the credibility of findings. <BR>
+2.	Preferred choice for researchers and analysts aiming for rigorous and reproducible data analysis. <BR>
+<FONT SIZE = 2, color = "black">
+<B>II. ANALYSIS SECTION</B><BR>
+<FONT SIZE = 2, color = "black">
+<B>1. SIMPLE REGRESSION </B><BR>
+&nbsp;  Simple Regression performs the analysis between one independent variable and one dependent variable. In this part 1 section, the dataset mpg will be elaborated and analyzed through descriptive statistics, coefficient of correlation and determination, Linear regression analysis, and Scatterplot.<BR>
+<FONT SIZE = 2, color = "black">
+<B>1.1 Dataset description </B><BR>
+&nbsp;  Presenting the brief summary of the descriptive statistics for all the variables of the dataset mpg (fuel economy).
+
+```{r message=FALSE, warning=FALSE}
+
+#presenting the summary of mpg using summarytools function
+shortsummary_dataset <- summarytools::descr(fueleconomy_data)
+
+#formatting the table using kable function
+kable(shortsummary_dataset, table.attr = "style='width:90%;'", align = "c", format = "html", digits = 3)%>%
+  kable_styling(bootstrap_options = "bordered", latex_options = "striped", font_size = NULL)
+
+#presenting the summary of mpg using psych::describe function
+extendedsummary_dataset <- t(psych::describe(fueleconomy_data))
+
+#formatting the table using kable function
+kable(extendedsummary_dataset, table.attr = "style='width:90%;'", align = "c", format = "html", digits = 3)%>%
+  kable_styling(bootstrap_options = "bordered", latex_options = "striped", font_size = NULL)
+
+```
+<B>Observation:</B><BR>
+&nbsp;  It is impressive to obtain the brief descriptive statistics summary of the mpg or fuel economy dataset for each of its variable. Some of the most notable information from the summary are,<BR>
+&nbsp;  1. Number of observations for each variable is similar, n = 234.<BR>
+&nbsp;  2. According to the variable "Cylinders", the standard deviation of the cylinder capacities of the vehicles stands at 1.612 and its average is 5.89, which helps us to understand its distribution and central tendency; besides, its range is between 4 and 8.<BR>
+&nbsp;  3. According to the variable "Displacement", the standard deviation of the displacement of the vehicles stands at 1.292 and its average is 3.472, which helps us to understand its distribution and central tendency; besides, its range is between 1.6 and 7.<BR>
+&nbsp;  4. Observing the complete statistical data such as measure of central tendency, disperson, and postion, helps us to get the glimpse of the data which would be helpful for sophisticated analysis.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>1.2 Statistics of a Dependent Variable</B><BR>
+In this section, the descriptive statistics of a dependent variable "Displacement" will be presented in tabular format, according to the independent variable "Cylinders".
+
+```{r}
+
+#applying mpg (fuel economy) data set
+#grouping by different cylinder numbers
+#deriving descriptive statistics of displacement
+displ_percyl = fueleconomy_data %>%
+  group_by(No_of_Cylinders = fueleconomy_data$cyl) %>%
+  summarise(Mean = mean(displ),
+            SD = sd(displ),
+            Minimum = min(displ),
+            Maximum = max(displ))
+
+#formatting the table using kable functions
+displ_percyl %>%
+  kable(align = "c", caption = "Descriptive Statistics of displacement per cylinders", format = "html", digits = 2, table.attr = "style='width:75%;'") %>%
+  kable_classic_2(bootstrap_options=c("hover","striped","condensed"), html_font = "Source Sans Pro", position = "center", font_size = 14) %>%
+  add_header_above(c(" " = 1,"Vehicle Displacement" = 4))
+
+```
+<B>Observation:</B><BR>
+Based on the observation, it is visible that there are 4 categories in the "cylinder" capacities of the vehicles. For each category, the statistics of the dependent variable "displacement" presented. Some of the notable points are, <BR>
+&nbsp;  1. Mean and Range of displacement increases as cylinder capacity increases.<BR>
+&nbsp;  2. Vehicles with five cylinders, doesn't show any variation in the displacements irrespective of any other variables in place. Its standard deviation is 'Zero'.<BR>
+&nbsp;  3. Standard deviation of displacement for all the cylinder capacities stays below 1.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>1.3 Coefficient of Correlation </B><BR>
+In this section, we will analyze the correlation between cylinders (x, independent) variable and displacement (y, dependent) variable. The same will be presented in the tabular format and make observations.
+
+```{r coefficient of correlation code}
+
+#correlation table for first 5 values
+table_correlation <- head(data.frame(
+  x = fueleconomy_data$cyl,
+  y = fueleconomy_data$displ,
+  xy = fueleconomy_data$cyl * fueleconomy_data$displ,
+  x2 = fueleconomy_data$cyl^2,
+  y2 = fueleconomy_data$displ^2),5)
+
+#formatting the table using kable function
+kable(table_correlation, align = "c", format = "html", caption = "Correlation Table: Cylinder(x)  Vs Displacement (y)")%>%
+  kable_styling(bootstrap_options=c("striped","bordered","condensed"), html_font = "Cambria", position = "center", font_size = 13)
+
+#using the table, calculating the sum of x, y, xy, x2, and y2
+sum_x <- sum(table_correlation$x)
+sum_y <- sum(table_correlation$y)
+sum_xy <- sum(table_correlation$xy)
+sum_x2 <- sum(table_correlation$x2)
+sum_y2 <- sum(table_correlation$y2)
+
+# Display the sum values
+cat("Σx:", sum_x, "|", "Σy:", sum_y, "|", "Σxy:", sum_xy, "|", "Σx²:", sum_x2, "|", "Σy²:", sum_y2, "\n")
+
+```
+<B>Observation:</B><BR>
+Based on the analysis between cylinders (x) and displacement (y), the correlation table has been presented for the first 5 values. These values considered to be significant to perform further analysis to determine correlation coefficient between them. Based on the obtained information, the pattern and range between the variables can be recognized.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>1.4 Correlation and Determination </B><BR>
+Formulating correlation and determination using correlation coefficient (r) formula and with the values of x and y obtained from the previous task 1.3.
+
+```{r}
+#number of data pairs
+n=5
+
+#computing numerator for coef of correlation
+rnum = (n*sum_xy)-(sum_x*sum_y)
+
+#computing denominator for coef of correlation
+rden = sqrt((n*sum_x2 - (sum_x)^2)*(n*sum_y2 - sum_y^2))
+
+#coefficient of correlation r between displacement and cylinders
+coefcorrelation_r = rnum / rden
+
+#coefficient of determination r2 between displacement and cylinders
+coefdetermination_r2 = (coefcorrelation_r)^2
+```
+
+<B>Observation:</B><BR>
+&nbsp;  1. The coefficient of correlation between cylinders and displacement is ``r round(coefcorrelation_r,3)``<BR>
+&nbsp;  2. The coefficient of determination between cylinders and displacement is ``r round(coefdetermination_r2,3)``<BR>
+The correlation coefficient shows that there is a strong positive correlation between cylinders (x) and displacement (y) since their coefficient of correlation value is 0.97. Accordingly, the coefficient of determination is 0.942, which reveals that the displacement (y) is 94.2% dependent on the independent variable cylinders (x), and the remaining 5.8% dependent on the external factors.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>1.5 Linear Regression </B><BR>
+Formulating the linear regression between the variables displacement and cylinders. Accordingly, identifying the intercept and slope of those two variables.
+
+```{r linear regression}
+
+#formulating linear regression between cylinders and displacement 
+linreg_cyl_displ <- lm(fueleconomy_data$displ ~ fueleconomy_data$cyl)
+
+#summarizing linear regression
+summary_linreg <- summary(linreg_cyl_displ)
+
+#finding intercept and slope
+intercept_a <- coef(summary_linreg)[1]
+slope_b <- coef(summary_linreg)[2]
+
+```
+
+<B>Observation:</B><BR>
+&nbsp;  y = ``r round(intercept_a, 2)`` + ``r round(slope_b, 2)``x  <BR>
+&nbsp;  Based on the computation of linear regression between cylinders and displacement, we able to observe the above linear regression formula that includes intercept and slope. Considering the result, we can anticipate that the intersection of dependent and independent variable at the intercept of -0.92 and slope of 0.75.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>1.6 Scatterplot </B><BR>
+In this section, scatterplot will be presented for the linear regression of independent variable cylinders and dependent variable displacement.
+
+```{r}
+
+#framing scatterplot between displacement and cylinders
+plot(fueleconomy_data$displ ~ fueleconomy_data$cyl, xlim = c(0,10), ylim = c(0,10), pch = 3, xlab = "Cylinders", ylab = "Displacement")
+
+#adding regression line to the graph
+abline(linreg_cyl_displ, lty=1, lwd=1, col="#99004C")
+
+#adding mean of cylinders and displacement to the graph
+mean_cyl <- mean(fueleconomy_data$cyl)
+mean_displ <- mean(fueleconomy_data$displ)
+abline(v=c(mean_cyl), col= "red")
+abline(h=c(mean_displ), col= "darkblue")
+
+#adding labels to the mean and 
+text(x=mean_cyl, y=8, round(mean_cyl,2), cex=0.8, srt=90, adj = c(1,0))
+text(x=mean_displ, y=3.8, round(mean_displ,2), cex=0.8, srt=360, adj = c(1,0))
+```
+
+<B>Observation:</B><BR>
+As presented in the scatterplot, we able to recognize the presence of the data points, linear regression line, mean of displacement, and mean of cylinders. Some of the significant observations are,<BR>
+&nbsp;  1. The observed 'y' (displacement) with respect to cylinders are closely accumulated and there are no outliers, which makes real sense of the reality of dataset.<BR>
+&nbsp;  2. The average of displacement and the average of cylinders intersect close to the cylinder capacity approx. 5.9 and displacement level approx. 3.8.<BR>
+&nbsp;  3. There is a minor variation at each residual value of the data points.<BR>
+&nbsp;  4. As we calculated coefficient of correlation and determination in the task 1.4, the strength of the correlation between the variables is good, which means that displacement is highly dependent on cylinder capacity of the vehicles.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>1.7 Predicted Values and Residuals </B><BR>
+In this section, the linear regression formula of the variables cylinders and displacement applied to compute the predicted value of displacement and its residuals. The details have been presented in the tabular format.
+
+```{r}
+
+#applying linear regression formula and mutate function, computing the table with x, y, observed y, predicted y, and residuals
+prediction_table <- fueleconomy_data %>%
+  mutate(
+  x = fueleconomy_data$cyl,
+  observed_y = fueleconomy_data$displ,
+  predicted_y = predict(linreg_cyl_displ),
+  residuals = residuals(linreg_cyl_displ))
+
+#filtering the first 10 observations of the table
+prediction_table <- head(prediction_table, 10)
+
+#formatting the table using kable function
+kable(prediction_table, format = "html", align = "c", digits = 3)%>%
+  kable_styling(bootstrap_options = "bordered", font_size = 11, table.envir = "table")
+
+```
+
+<B>Observation:</B><BR>
+While observing the results of predicted value of y_displacement, according to the independent variable x_cylinders, we can recognize the differences between observed y value and predicted y value. Some of the key points are, <BR>
+&nbsp;  1. There are significant expectation of displacement levels according to the size of the cylinders. For instance, cylinder size '4' has the predicted y_displacement value of '2.063', irrespective of the other variables. Similarly, cylinder size '6' has the predicted y value of '3.555'.<BR>
+&nbsp;  2. From the first 10 observations, the lowest residual value is -0.063 and highest residual value at -0.755.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>1.8 Predicting Dependent Variable - Linear Regression </B><BR>
+Based on the instructions, I have chosen x cylinder independent variable value as 6 and tried to predict its respective dependent value y by applying in the linear regression formula.
+
+```{r}
+
+#choosing the value for X_cylinder
+X_cyl = 6
+
+#predicting the y_displacement for the respective X_cyl value
+predict_y_displ = (X_cyl * slope_b) + intercept_a
+
+#presenting scatterplot to show regression between displacement and cylinders
+plot(fueleconomy_data$displ ~ fueleconomy_data$cyl, xlim = c(0,10), ylim = c(0,10), pch = 4, xlab = "Cylinders", ylab = "Displacement")
+
+#adding the chosen X_cyl value and its predicted y_displ value
+abline(v=c(X_cyl), col= "red")
+abline(h=c(predict_y_displ), col= "darkblue")
+
+#adding label to the corresponding X and Y values
+text(x=X_cyl, y=8, round(X_cyl,2), cex=0.8, srt=90, adj = c(1,0))
+text(x=predict_y_displ, y=4, round(predict_y_displ,2), cex=0.7, srt=360, adj = c(1,0))
+
+```
+
+<B>Observation:</B><BR>
+The presented scatterplot is based on the randomly chosen X value 6 (cylinder size) and prediction of its respective y value (displacement) value. The predicted y value is 3.55 and it is found using the linear regression formula y=a+bx. By applying, the intercept, slope, and x value, we able to determine the predicted y value. It can be translated for our understanding that, for the cylinder size 6 of vehicles, the expected displacement level is 3.55.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>2. MULTIPLE REGRESSION </B><BR>
+Multiple regression analysis is a sophisticated version of regression analysis that deals with one dependent variable and one or more independent variables. In this section, multiple regression analysis performed and the respective observations presented for the same.<BR>
+<FONT SIZE = 2, color = "black">
+<B>2.1 Predictions </B><BR>
+For the patient dataset which has variables patientID, Systolic BP, age, and Weight, multiple regression analysis and hypothesis testing has been done in the following section.
+
+```{r }
+
+#creating objects of the dataset
+patient_ID = c("PK01", "PK02", "PK03", "PK04", "PK05", "PK06", "PK07", "PK08", "PK09", "PK10", "PK11", "PK12", "PK13", "PK14", "PK15")
+SystolicBP = c(112, 156, 125, 145, 155, 162, 139, 144, 153, 126, 169, 132, 143, 153, 162)
+Age = c(45, 60, 55, 60, 62, 71, 57, 59, 64, 42, 75, 52, 59, 67, 73) 
+Weight = c(135, 182, 148, 182, 190, 232, 194, 182, 217, 171, 225, 173, 184, 194, 211)
+
+#creating dataframe
+patient_data <- data.frame(patient_ID, SystolicBP, Age, Weight)
+patient_data_numeric <- data.frame(SystolicBP, Age, Weight)
+
+#multiple regression
+multip_linreg <- lm(SystolicBP ~ Age + Weight)
+summary_mulreg <- summary(multip_linreg)
+
+# Calculate correlation between Age and SystolicBP
+cor_age_sbp <- cor(patient_data$Age, patient_data$SystolicBP)
+det_age_sbp <- (cor_age_sbp)^2
+
+# Calculate correlation between Age and Weight
+cor_age_weight <- cor(patient_data$Age, patient_data$Weight)
+det_age_weight <- (cor_age_weight)^2
+
+# Calculate correlation between Weight and SystolicBP
+cor_weight_sbp <- cor(patient_data$Weight, patient_data$SystolicBP)
+det_weight_sbp <- (cor_weight_sbp)^2
+
+# Create a data frame to display the results
+correlation_table <- data.frame(
+  Variable_Pair = c("Age and SystolicBP", "Age and Weight", "Weight and SystolicBP"),
+  Multiple_Correlation_Coefficient = c(cor_age_sbp, cor_age_weight, cor_weight_sbp), 
+  Multiple_Determination_Coefficient = c(det_age_sbp, det_age_weight,det_weight_sbp)
+)
+
+# formatting the table using kable function
+kable(correlation_table, align = "c", format = "html", digits = 3) %>%
+  kable_styling(bootstrap_options = c("striped", "bordered"), table.envir = "table", )
+
+#null hypothesis - systematic blood pressure cannot be predicted using the variables age and weight
+#alternative hypothesis - systematic blood pressure can be predicted using the variables age and weight
+
+#computing F value and Critical value
+F_value = 57.73
+cv = qf(0.05, 2, 12, lower.tail=FALSE)
+
+#intercept and slope for the multiple regression
+multireg_intercept_a <- coef(summary_mulreg)[1]
+multireg_slope_ageb1 <- coef(summary_mulreg)[2]
+multireg_slope_weib2 <- coef(summary_mulreg)[3]
+
+#predicted systolic bp for a person age 25 and weight 135
+predicted_sbp1 <- multireg_intercept_a + (multireg_slope_ageb1 * 25) + (multireg_slope_weib2 * 135)
+
+#predicted systolic bp for a person age 80 and weight 175
+predicted_sbp2 <- multireg_intercept_a + (multireg_slope_ageb1 * 80) + (multireg_slope_weib2 * 175)
+
+```
+
+<B>Observation:</B><BR>
+The hypothesis test result is "Reject the null hypothesis. There is a significant linear relationship between Age, Weight, and Systolic Blood Pressure" since the F value ``r F_value`` greater than critical value ``r round(cv,2)``<BR>
+&nbsp;  1. The predicted systolic blood pressure for a person age 25 and weight 135 is ``r round(predicted_sbp1, 2)``<BR>
+&nbsp;  2. The predicted systolic blood pressure for a person age 80 and weight 175 is ``r round(predicted_sbp2, 2)``<BR>
+In this section, we have analyzed the multiple regression between the dependent variable "Systolic blood pressure" and independent variables "Age" and "Weight". Some of the key points are,<BR>
+&nbsp;  1. It gives us the profound understanding of the correlation and determination between these variables.<BR>
+&nbsp;  2. The correlation of age and systolic blood pressure appears to be having strong positive with 0.925 compared to the other positive correlations between age and weight which stands at 0.838 and between weight and systolic blood pressure which stands at 0.898.<BR>
+&nbsp;  3. The determination coefficient of age and systolic blood pressure is also high with 85.5% compared to other variable combinations. The remaining 14.5% dependent on external factors.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>2.2 Scatterplots </B><BR>
+In this section, single linear regression analysis scatter plot presented for the two independent variables with respect to their common dependent variable.
+
+```{r}
+
+#using par function to format the chart
+par(mfrow=c(1.9,2), mai=c(0.6, 0.8, 0.5, 0.4), mar=c(4,4,1,1))
+
+#computing linear regression between age and systolic bp and between weight and systolic bp
+linreg_age_bp <- lm(SystolicBP ~ Age)
+linreg_weig_bp <- lm(SystolicBP ~ Weight)
+
+#presenting scatterplot for independent variable systolic bp and dependent variable age
+plot(SystolicBP ~ Age, data = patient_data, pch=18, col="orange")
+abline(linreg_age_bp, lty=1, lwd=1, col="#660066")
+
+#presenting scatterplot for independent variable systolic bp and dependent variable weight
+plot(SystolicBP ~ Weight, data = patient_data, pch=8, col="purple")
+abline(linreg_weig_bp, lty=1, lwd=1, col="#FF007F")
+
+```
+
+<B>Observation:</B><BR>
+Based on the presentation of linear regression analysis between age and systolic bp and between weight and systolic bp, we can observe the following key points, <BR>
+&nbsp;  1. The values of the correlation coefficient and coefficient determination which were found in the previous task, most probably aligning with the data points depicted in these scatter plots.<BR>
+&nbsp;  2. The correlation of age and systolic bp is much better than correlation of weight and systolic bp.<BR>
+&nbsp;  3. To review further, the residual values looks higher in the scatterplot of weight and systolic bp, than the age vs systolic bp.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>2.3 Predicted Values and Residuals </B><BR>
+In this section, predicted value of systolicbp_y will be computed and the same would be compared with the x1_age, x2_weight, and observed_y.
+
+```{r}
+
+#creating the prediction table for patient dataset by computing x1, x2, observed_y, predicted_y, residuals
+patientdata_predtable <- patient_data %>%
+  mutate(
+  x1 = patient_data$Age,
+  x2 = patient_data$Weight,
+  observed_y = patient_data$SystolicBP,
+  predicted_y = predict(multip_linreg),
+  residuals = residuals(multip_linreg)
+  )
+
+#formatting the table using kable function
+kable(patientdata_predtable, format = "html", align = "c", digits = 3)%>%
+  kable_styling(bootstrap_options = "bordered", font_size = 11, table.envir = "table")
+
+```
+
+<B>Observation:</B><BR>
+In the above table, the complete dataset has been presented and with the addition of prediction table values x1, x2, observed_y, predicted_y, and residuals. Some of the key observations are,<BR>
+&nbsp;  1. Residual values is as low as 0.033 and as high as 12.496. <BR>
+&nbsp;  2. The dependent variables age and weight have been making a significant impact in the dependent variable systolic bp.<BR>
+&nbsp;  3. Since the age and weight has high influence on systolic blood pressure, it is understandable that the change in those variables make vital difference.<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>2.4 Residuals </B><BR>
+In this section, scatterplot has been between residuals and age/weight inorder to observe their linear regression.<BR>
+
+```{r}
+
+#using par function to present two graphs in columns
+par(mfrow=c(1.9,2), mai=c(0.6, 0.8, 0.5, 0.4), mar=c(4,4,1,1))
+
+#scatterplot residuals vs age
+plot(patientdata_predtable$residuals ~ patient_data$Age, xlab = "Age", ylab = "Residuals", pch=16)
+
+#scatterplot residuals vs weight
+plot(patientdata_predtable$residuals ~ patient_data$Weight, xlab = "Weight", ylab = "Residuals",pch=23)
+
+```
+<BR>
+<B>Observation:</B><BR>
+The presentation of two charts between residuals and age, and between residuals and weight gives insights on how the residual values varies and dispersed in the range.<BR>
+&nbsp;  1. As we know, if the residual value is low or as close to zero, then there is a high possibility for the observed value to achieve predicted value.<BR>
+&nbsp;  2. Incase, the residual value is so far from zero in the direction of negative or positive, then it is hard for the observed value to achieve predicted value. <BR>
+&nbsp;  3. In the above examples, residual values with respect to age and weight, more or less similar.<BR>
+One of the article written by Straume, et.al., 1992, states that the main purpose of the residual analysis is to determine the goodness-for-fit test. It helps to understand the quantitative relationship of the variables.<BR>
+
+<B>III. CONCLUSION </B><BR>
+<FONT SIZE = 2, color = "black">
+In this report, we have explored fundamental concepts of correlation and linear regression analysis within the context of a dataset called "mpg," focusing on variables related to fuel economy. The introduction emphasizes the importance of these analyses in understanding relationships, dependencies, and predictive capabilities between variables (Bluman, 2018). The practical applications of regression analysis, such as predicting vendor performance and assessing the impact of system changes, underscore its significance in real-world scenarios. <BR>
+The analysis section begins with a detailed exploration of simple regression, employing descriptive statistics and correlation coefficients. The correlation table and subsequent determination coefficients offer insights into the strength and nature of the relationship between the number of cylinders and vehicle displacement. Linear regression is then applied, providing a formula representing the relationship between cylinders and displacement. A scatterplot visually depicts linear regression, emphasizing the close accumulation of data points and the absence of outliers. <BR>
+The report extends its analysis to multiple regression, using a patient dataset featuring variables like Systolic Blood Pressure, age, and weight. Hypothesis testing is conducted to assess the significance of the relationships. The calculated correlation and determination coefficients between age, weight, and systolic blood pressure reveal strong positive associations. Scatterplots with linear regression lines visually represent these relationships. The report concludes by applying the multiple regression model to predict systolic blood pressure based on age and weight, emphasizing its practical implications in healthcare scenarios. <BR>
+Throughout the report, we underscored the advantages of using the R programming language for data analysis, citing factors such as extensive community support, flexibility, integration capabilities, reproducibility, and transparency, contributing to the credibility and rigor of the findings. Including practical applications and hands-on analysis of datasets enhances the report's educational value, providing a comprehensive overview of correlation and regression techniques in a practical context. <BR>
+
+<B>IV. BIBLIOGRAPHY </B><BR>
+<FONT SIZE = 2, color = "black">
+1.	Martin Straume, Michael L. Johnson,[5] Analysis of Residuals: Criteria for determining goodness-of-fit, Methods in Enzymology, Academic Press, Volume 210, 1992, Pages 87-105, ISSN 0076-6879, ISBN 9780121821111, https://doi.org/10.1016/0076-6879(92)10007-Z.<BR>
+2.	Robert H. Riffenburgh, Daniel L. Gillen, 15 - Linear regression and correlation, Editor(s): Robert H. Riffenburgh, Daniel L. Gillen, Statistics in Medicine (Fourth Edition), Academic Press, 2020, Pages 357-390, ISBN 9780128153284, https://doi.org/10.1016/B978-0-12-815328-4.00015-2. <BR>
+3.	Christophe Lalanne, Mounir Mesbah, 4 - Correlation, Linear Regression,
+Editor(s): Christophe Lalanne, Mounir Mesbah, Biostatistics and Computer-based Analysis of Health Data using SAS, Elsevier, 2017, Pages 77-96, ISBN 9781785481116, https://doi.org/10.1016/B978-1-78548-111-6.50004-6. <BR>
+4.	Carroll, Susan Rovezzi, and David J. Carroll. Simplifying Statistics for Graduate Students : Making the Use of Data Simple and User-Friendly, Rowman & Littlefield Publishers, Incorporated, 2023. ProQuest Ebook Central, https://www.proquest.com/legacydocview/EBC/7222367?accountid=12826. <BR>
+5.	NAYEBI, HOOSHANG. (2020). ADVANCED STATISTICS FOR TESTING ASSUMED CASUAL RELATIONSHIPS multiple regression analysis... path analysis logistic regression analysis. SPRINGER NATURE. <BR>
+6.	Razak, F. A., Rashidah, N., Baharun, N., & Deraman, N. A. (2018). Hypothesis testing on regression: Investigating students' skill. International Journal of Engineering and Technology (UAE), 7(4), 45-48. <BR>
+7.	Franzese, R., & Kam, C. (2009). Modeling and interpreting interactive hypotheses in regression analysis. University of Michigan Press. <BR>
+8.	Bluman, A. (2018), Elementary Statistics: a step-by-step approach. In Bluman, A., Descriptive and Inferential Statistics, (pp. 400-493) <BR>
+
+<B>V. APPENDIX </B><BR>
+<FONT SIZE = 2, color = "black">
+ An R Markdown report has been attached with this report. The name of the file is Final-Project_Correlation-and-Regression_Jayakumar.RMD
+
+<B>VI. ACKNOWLEDGEMENTS </B><BR>
+<FONT SIZE = 2, color = "black">
+I would like to thank my professor Dee Chiluiza for being such an inspiring teacher and students for being so challenging during learning process

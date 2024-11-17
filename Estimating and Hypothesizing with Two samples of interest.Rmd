@@ -1,0 +1,361 @@
+---
+---
+
+```{r libraryData, message=FALSE, warning=FALSE}
+
+#libraries applied
+library(readxl)
+library(tidyverse)
+library(magrittr)
+library(knitr)
+library(RColorBrewer)
+library(kableExtra)
+library(rio)
+library(psych)
+library(FSA)
+
+#sample 1 dataset imported 
+shop1dataset <- read_excel("datasets/shopdataset.xlsx", 
+    sheet = "Shop 1")
+#sample 2 dataset imported
+shop2dataset <- read_excel("datasets/shopdataset.xlsx", 
+    sheet = "Shop 2")
+
+```
+
+
+<B>
+<FONT SIZE = 4, color = "blue">
+<center><BR>
+Estimating and Hypothesizing with Two Samples of Interest
+<BR>
+<FONT SIZE = 3, color = "black">
+Probability Theory and Introductory Statistics
+<BR>
+<FONT SIZE = 2, color = "black">
+Northeastern University
+<BR>
+<FONT SIZE = 2, color = "black">
+</B>
+Student: Jayakumar Moris Udayakumar
+<BR>
+<FONT SIZE = 2, color = "black">
+Instructor Name: Prof. Dee Chiluza, PhD
+<BR>
+<FONT SIZE = 2, color = "black">
+Date: 4th December 2023
+<BR></center>
+
+<BR>
+<FONT SIZE = 2, color = "black">
+<B>I. INTRODUCTION</B>
+<BR>
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  a. Hypothesis Testing - Impact in the "Manufacturing - Supply Chain"</B><BR>
+&nbsp;  &nbsp;  The hypotheses testing is making a great impact in the manufacturing industry as it does in the other sectors. It helps to challenge the existing processes and test their impact effectiveness in the other dependent or independent fields. Specifically, as I come from a supply chain background, learning hypothesis testing and its application in the research areas of this field is explorative. It is like reverse learning – after experiencing the practical approach and then learning its theoretical approach, which is a different exposure. I wanted to highlight one statement I read in an article: The need for statistical tests in analysis and experimentation is always unquestioned (Carrasco et al., 2020). It also helps to analyze the performance of supply chain factors in optimizing the working capital and cash conversion cycle (Mulchandani et al., 2022).<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  b. Two Samples Comparison - Various applications of 'z' test, 't' test, and 'F' test</B><BR>
+&nbsp;  The two-sample comparison is a great technique to understand the significant and non-significant differences or relations between two sample groups to understand its population’s characteristics and parameters.<BR>
+&nbsp;  &nbsp;  The z-test is mainly used for a larger sample size, which is approximately over 30 in number. If we know the population variance, it is less widely used than the t-test since it is hard for researchers to know the population parameters, and it is relatively more straightforward to collect samples and derive inferences about the population from it (King et al., 2019).<BR>
+&nbsp;  &nbsp;  The t-test is based explicitly on a smaller sample size, where it is lower than 30. In this test, the sample distribution of the mean will follow t-distribution. There are cases where the sample size is relatively larger than 30 and may follow a t-test, but the distribution would be normal distribution instead of t-distribution (King et al., 2019).<BR>
+&nbsp;  &nbsp;  The F-test is used in two normally distributed sample groups to compare their variances and identify if they are equal (Tan, 2017). It also considered ANOVA (Analysis of Variance) since inferences of means are made by analysis of variance (Mishra, 2019).<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  c. Academic Writing - Importance of Proper References</B><BR>
+&nbsp;  &nbsp;  1.	The significance of citing resources in the research articles and studies is critical to respect and give credit to the original authors (MIT, 2023).<BR>
+&nbsp;  &nbsp;  2.	To avoid plagiarism in the research paper or an article we work on (MIT, 2023).<BR>
+&nbsp;  &nbsp;  3.	Every submitted academic manuscript is fully reviewed before it is accepted for any publication (Santini, 2018).<BR>
+
+<FONT SIZE = 2, color = "black">
+<B>&nbsp;  d. Description of Dataset</B><BR>
+&nbsp;  &nbsp;  The dataset used in this report is about the customers visiting two grocery markets to purchase products. It contains the variables such as customer's gender, age, visiting period (am/pm), shipping duration (in mins). These details are collected for two grocery markets with the sample size of 25 each. Therefore, it contains variables in the form of categorical nominal, categorical ordinal, and numerical discrete.
+<BR>
+<BR>
+<FONT SIZE = 2, color = "black">
+<B>II. ANALYSIS SECTION</B>
+<BR>
+<B>1.1 Research Context </B>
+<BR>
+&nbsp;  <B>a. Problem Statement<BR></B>
+&nbsp;  &nbsp;  Although e-commerce booming in the current era, it couldn't be used everyday considering its cost and time. Several customers visiting grocery markets for their daily needs. However, their shopping time differs based on their age and literacy factors. Hence, this study is about to identify whether there is a difference in shopping duration of the customers visiting two different grocery markets or not.<BR>
+&nbsp;  <B>b. Research Question<BR></B>
+&nbsp;  &nbsp;  1. Is there a difference in mean shopping duration of customers visiting two grocery markets?<BR>
+&nbsp;  &nbsp;  2. Can I significantly reject null hypothesis (no difference in shopping duration of customers visiting two different shops)?<BR>
+<B>1.2 Dataset Variables </B><BR>
+&nbsp;  <B>a. Variables Collected<BR></B>
+&nbsp;  &nbsp;  1. Customer Name/Count<BR>
+&nbsp;  &nbsp;  2. Gender<BR>
+&nbsp;  &nbsp;  3. Age<BR>
+&nbsp;  &nbsp;  4. Period<BR>
+&nbsp;  &nbsp;  5. Shopping duration (in mins)<BR>
+
+&nbsp;  <B>b. Support from "Variables" to answer research question<BR></B>
+&nbsp;  &nbsp;  To answer our research questions, the variable "Shopping duration (in mins)" support extremely well to make comparison between two sample groups. However, other variables which were collected may not be required since our questions mainly focus on shopping duration.
+
+<BR>
+<B>1.3 Dataset: Tabular and Graphical Presentation </B><BR>
+&nbsp;  In this section, dataset will be presented in the tabular format with all of its variables. Furthermore, two of its numerical variables displayed in the graphical formats.
+
+```{r message=FALSE, warning=FALSE}
+
+#using kable() to present the dataset in table
+kable(shop1dataset, table.attr = "style='width:90%;'", align = "c", format = "html")%>%
+  kable_styling(bootstrap_options = "bordered", latex_options = "striped", font_size = NULL)
+
+#presenting histogram for the variable "age"
+hist(shop1dataset$Age, main = "Shop 1 - Customer's Age Vs Freq of visit", col = brewer.pal(8,"Set3"), ylim = c(0,10), xlab = "Age group", breaks = "Sturges")
+
+#presenting boxplot for the variable "shopping duration (in mins)"
+boxplot(shop1dataset$`Shopping duration (in mins)`, horizontal = TRUE, col = brewer.pal(8,"Set2"), main = "Shop 1 - Customer's Shopping duration (mins)")
+
+```
+
+<B><BR>
+Observation:
+</B><BR>
+<BR>
+<B>Table: <BR></B>
+While observing the tabular presentation of the dataset, it is understandable that the variables are in three different types: nomina, ordinal, and discrete.<BR>
+Median - From the variable "Shopping duration (in mins)", we can understand that the median is 9-10 mins as its range is between 5 and 20. <BR>
+Mode - From the variable "Shoppping duration (in mins)" which is the context of hypothesis in this study, mode is 5 as it has multiple repetitions compared to other values.
+<BR>
+<B>Histogram:<BR></B>
+This histogram presentation is based on the "Age" of the customers visiting the shop 1. Here are the observations from descriptive statistics point of view.
+Range: The Age group range is between 10 and 80
+Maximum: I see the customers in the age of 30-40 visiting the shop 1 most often compared to other age groups
+Minimum: I see the customers in the age of 70-80 visiting the shop 1 less often compared to other age groups
+Mean: Based on the visual presentation, the average in the frequency of the shop visit lies in between 2 and 4
+<BR>
+<B>Boxplot:</B><BR>
+The boxplot is presented from the context of understanding the variable "Shopping duration (in mins)" for shop 1. Here are the observations from descriptive statistics point of view.
+Range: The range of this variable lies in between 2 and 20
+Inter-quartile range: The IQ1 and IQ3 stands at 5 and 12, respectively
+Median: The median of this variable data lies at approximately 7 or 8.
+
+<BR>
+<B>1.4 Sampling Method and Descriptive Statistics </B><BR>
+&nbsp;  a. Sampling Method used for data collection<BR>
+&nbsp;  &nbsp;  I have used convenience sampling method to the pick sample data. Since I stay at remote location, and I have found two different grocery shops and thought of observing the number of customers visit, their shopping duration, and age groups. Based on my observation, the convenience sampling considered as best approach considering the limited resources availability.
+&nbsp;  b. Sample Size<BR> 
+&nbsp;  &nbsp;  The sample size chosen for this data collection process is 25 for each sample groups. In this case, 25 observations performed for shop 1 and 25 observations collected for shop 2
+
+```{r}
+
+#samplesize
+n1=25
+n2=25
+n=n1+n2
+
+
+#descriptive statistics shop 1
+mean_custshoppingtime_shop1 = mean(shop1dataset$`Shopping duration (in mins)`)
+sd_customershoppingtime_shop1 = sd(shop1dataset$`Shopping duration (in mins)`)
+
+#descriptive statistics shop 2
+mean_custshoppingtime_shop2 = mean(shop2dataset$`Shopping duration (in mins)`)
+sd_customershoppingtime_shop2 = sd(shop2dataset$`Shopping duration (in mins)`)
+```
+
+<B>Observation:</B><BR>
+&nbsp;  The dataset will be described by the 'mean' parameter. <BR>
+&nbsp;  &nbsp;  The reason for choosing the 'mean' parameter for this hypothesis testing is to identify the average shopping duration of customers visiting two different shopping markets and from its context, we try to prove null hypothesis wrong that significantly denies differences in customer's shopping time in two different shops.<BR>
+&nbsp;  &nbsp;  Hence, average shopping duration of customers formulated in the above R chunk code to use it as estimator to derive inferences of population and make comparison.
+
+<BR>
+<B>1.5 Hypothesis </B><BR>
+&nbsp;  <B>a. Null and Alternative Hypothesis (Bluman, 2018)<BR></B>
+&nbsp;  &nbsp;  1. Ho: µ1 = µ2, There is no difference in shopping duration of customers visiting shop 1 and shop 2 <BR>
+&nbsp;  &nbsp;  2. Ha: µ1 ≠ µ2, There is a difference in shopping duration of customers visiting shop 1 and shop 2<BR>
+
+&nbsp;  <B>b. Importance of well-presented hypothesis<BR></B>
+&nbsp;  &nbsp;  Hypothesis Testing and its importance is essential for any research and case studies. Some of its critical advantages include (Williamson, 2002),
+&nbsp;  &nbsp;  1. Being brief and as clear as possible in our research<BR>
+&nbsp;  &nbsp;  2. It helps the readers to understand and test for validation<BR>
+&nbsp;  &nbsp;  3. Provide enough content and analysis in explaining the relationship or comparison of two or more variables<BR>
+&nbsp;  &nbsp;  4. It has to be grounded from past experience or knowledge, and focus much on literature reviews or theory for exploration in the study in wide angle<BR>
+
+<B>1.6 Two Tailed Hypothesis - CL, Alpha, Critical Values </B><BR>
+&nbsp;  &nbsp;  1. This hypothesis testing is two-tailed since we are trying to identify the true population means have any differences in customer's shopping duration of shop 1 and shop 2, and not about one or the other higher or lower.<BR>
+&nbsp;  &nbsp;  2. Confidence level chosen as 0.95 by allowing 5% significance due to that we can be 95% confident to reject the null hypothesis.<BR>
+
+```{r}
+
+CL = 0.95
+alpha = 1-CL
+alpha_2 = alpha/2
+
+df=n1-1
+
+cvleft = qt(alpha_2, df)
+cvright = qt(1-alpha_2, df)
+
+```
+
+&nbsp;  The confidence level of this hypothesis testing is `r CL` <BR>
+&nbsp;  The significance level of this hypothesis testing at each tail is `r alpha_2`<BR>
+&nbsp;  The critical values of the confidence level `r CL` are left critical value  ``r round(cvleft, 2)`` and right critical value ``r round(cvright, 2)``
+
+<BR>
+<B>1.7 Density Distribution </B><BR>
+&nbsp;  &nbsp;  In this section, presenting the density plot of the variable "Shopping duration (in mins)" from Sample group 1 after normalizing the data. Besides, the density distribution also highlight the confidence level, significance value, and critical values.<BR>
+
+```{r message=FALSE, warning=FALSE}
+
+shop1dataframe <- data.frame(shop1dataset$`Shopping duration (in mins)`)
+
+
+norm_sample1 <- (shop1dataframe$shop1dataset..Shopping.duration..in.mins.. - mean_custshoppingtime_shop1) / sd_customershoppingtime_shop1
+
+norm_sample1 %>%
+  density(data = data.frame(norm_sample1), adjust = 2) %>%
+  plot(main = "", xlab = "Density Curve - Shop 1 Customer shopping time", cex.axis = 1)
+
+abline(v=c(cvleft, cvright), col = c("red", "red"))
+text(x=cvleft, y=0.20, round(cvleft,2), srt=90, cex=0.8, adj = c(0.86,0))
+text(x=cvright, y=0.20, round(cvright,2), srt=90, cex=0.8, adj = c(0.86,0))
+text(x=0, y=0.15, labels = as.character(CL), srt=0, cex=0.8, adj = c(0.86,0))
+text(x=-2.2, y=0.02, labels = as.character(alpha_2), srt=0, cex=0.6, adj = c(0.86,0))
+text(x=2.6, y=0.02, labels = as.character(alpha_2), srt=0, cex=0.6, adj = c(0.86,0))
+
+```
+
+<BR>
+&nbsp;  <B>Data Distribution - 3 Basic Descriptive Statistics<BR></B>
+&nbsp;  <B>Range</B> - <BR>
+&nbsp;  &nbsp;  The range of this data in normal distribution of shopping duration (in mins) is clearlty visible as it stands in between -3 and 3.<BR>
+&nbsp;  <B>Standard deviation</B> - <BR>
+&nbsp;  &nbsp;  The standard deviation of this normalized distribution is 2. Therefore, the sample data is distributed in visualization between -4 and 4.<BR>
+&nbsp;  <B>Critical Value</B> - <BR>
+&nbsp;  &nbsp;  Since the confidence level chosen for this hypothesis testing as 0.95, which lefts the significance level as 0.05, and according to the two-tailed test, significance level at lower tail and upper tail is 0.025, respectively. The critical values stands at -2.06 and 2.06. Therefore, it allows the confidence level stands in between the sample distribution -2.06 and 2.06.
+
+<BR>
+<B>1.8 T-test Value </B><BR>
+
+
+
+```{r}
+
+Ttest = ((mean_custshoppingtime_shop1 - mean_custshoppingtime_shop2)-0) / sqrt((sd_customershoppingtime_shop1^2/n1) + (sd_customershoppingtime_shop2^2/n2))
+
+```
+<BR>
+<B>Observation:</B><BR>
+The T test value of the hypothesis testing in an attempt to prove null hypothesis wrong is `r round(Ttest, 2)` <BR>
+
+In the above T-test formula, differences of mean of customer shopping time in shop 1 and shop2 evaluated and it is divided by the square root of the sum of square root of standard deviation of two shops divided by its respective sample size.
+
+<BR><B>1.9 Comparison: T-test and Critical Value</B><BR>
+
+
+```{r}
+
+resultHo <- Ttest<cvleft
+
+```   
+
+<BR>
+<B>Observation:</B><BR>
+
+&nbsp;  The T value is negative ``r round(Ttest, 2)``, hence comparing it with negative critical value ``r round(cvleft, 2)``<BR>
+
+&nbsp;  Is T test value is less than left critical value? ``r resultHo``<BR>
+
+&nbsp;  Since the t value `r round(Ttest, 2)`is greater than the left Critical value `r round(cvleft, 2)`, there is not enough evidence and have failed to reject the null hypothesis that is claiming as there is no significant difference in shopping duration of the customers visiting shop1 and shop2.
+
+
+<BR>
+<B>1.10 p value </B><BR>
+
+
+```{r}
+
+pvalue = 2*pt(abs(Ttest), df=df, lower.tail = FALSE)
+
+```
+
+<B>Observation:</B><BR>
+
+The p value of the hypothesis testing in an attempt to prove null hypothesis wrong is `r round(pvalue, 2)` <BR>
+
+The main purpose of the pvalue is to identify the probability of sample statistic (like sample mean) or extreme sample statistic in the direction of the alternative hypothesis when null hypothesis is true (Bluman, 2018). <BR>
+
+In the above hypothesis testing, we failed to reject the null hypothesis and found that p value is around 0.18, which gives clear path to understand and analyze whether Type 1 error occured in this study.
+
+
+<BR><B>1.11 Density Distribution - T test value</B><BR>
+
+
+```{r message=FALSE, warning=FALSE}
+
+norm_sample1 <- (shop1dataframe$shop1dataset..Shopping.duration..in.mins.. - mean_custshoppingtime_shop1) / sd_customershoppingtime_shop1
+
+norm_sample1 %>%
+  density(data = data.frame(norm_sample1), adjust = 2) %>%
+  plot(main = "", xlab = "Density Curve - Shop 1 Customer shopping time", cex.axis = 1)
+
+abline(v=c(cvleft, Ttest, cvright), col = c("red","blue","red"))
+text(x=cvleft, y=0.20, round(cvleft,2), srt=90, cex=0.8, adj = c(0.86,0))
+text(x=cvright, y=0.20, round(cvright,2), srt=90, cex=0.8, adj = c(0.86,0))
+text(x=Ttest, y=0.10, round(Ttest,2), srt=90, cex=0.8, adj = c(0.86,0))
+text(x=0, y=0.15, labels = as.character(CL), srt=0, cex=0.8, adj = c(0.86,0))
+text(x=-2.2, y=0.02, labels = as.character(alpha_2), srt=0, cex=0.6, adj = c(0.86,0))
+text(x=2.6, y=0.02, labels = as.character(alpha_2), srt=0, cex=0.6, adj = c(0.86,0))
+
+text(x=2.6, y=0, labels = as.character(round(pvalue,2)), srt=0, cex=0.6, adj = c(0.86,0))
+
+```
+<BR>
+<B>Observation:</B><BR>
+Based on my understanding, T-test value is clearly outside the critical value and it is the resemblence that we failed to reject hypothesis. Still, we need concrete sample data to work on this hypothesis testing to try to prove null hypothesis is wrong.
+
+<BR><B>1.12 Density Distribution - Two Sample Group Comparison </B><BR>
+
+
+```{r}
+
+
+
+density(shop1dataset$`Shopping duration (in mins)`)%>%
+  plot(main="")
+
+lines(density(shop2dataset$`Shopping duration (in mins)`),col= c("red") )
+
+mean_custshoppingtime_shop2 = mean(shop2dataset$`Shopping duration (in mins)`)
+
+abline(v=c(mean_custshoppingtime_shop1, mean_custshoppingtime_shop2), col=c("blue", "green"))
+
+meanshop1 <- mean_custshoppingtime_shop1
+meanshop2 <- mean_custshoppingtime_shop2
+
+text(x=meanshop1, y=0.035, labels = as.character(meanshop1), srt=90, cex = 0.9, adj = c(0.8,0))
+text(x=meanshop2, y=0.035, labels = as.character(meanshop2), srt=90, cex = 0.9, adj = c(0.8,0))
+
+```
+
+<B>Observation:</B><BR>
+This density distribution of raw data of sample group 1 and group 2 gives basic understanding how well these two groups' data varied at the scale of data range. <BR>
+by incorporating the mean of two groups shows how far they lie in the distribution and helps us to understand its differences and relativity to understand its patterns.
+
+<BR>
+<FONT SIZE=2, color="black">
+<B>III. CONCLUSION</B><BR>
+&nbsp;  &nbsp;  In conclusion, hypothesis testing has emerged as a crucial tool in the manufacturing-supply chain sector, enabling a systematic evaluation of existing processes and their impact on various facets of the industry. Particularly in the realm of supply chain research, the exploration of hypothesis testing represents a unique approach, involving practical experiences before delving into theoretical understanding.<BR>
+&nbsp;  &nbsp;  The need for statistical tests in analysis and experimentation is deemed unquestionable, emphasizing the pivotal role of hypothesis testing in assessing and optimizing supply chain factors. The utilization of two-sample comparison techniques, such as the 'z' test, 't' test, and 'F' test, offers a nuanced understanding of significant differences and relationships between sample groups. The choice of these tests depends on factors like sample size and knowledge of population variance.<BR>
+&nbsp;  &nbsp;  Overall, hypothesis testing, in conjunction with specific comparison tests, provides a robust framework for decision-making and continuous improvement in the manufacturing-supply chain, contributing to enhanced efficiency and effectiveness in operations.<BR>
+<BR>
+<FONT SIZE=2, color="black">
+<B>IV. BIBLIOGRAPHY</B><BR>
+&nbsp;  &nbsp;  1.	J. Carrasco, S. García, M.M. Rueda, S. Das, F. Herrera, Recent trends in the use of statistical tests for comparing swarm and evolutionary computing algorithms: Practical guidelines and a critical review, Swarm and Evolutionary Computation, Volume 54, 2020, 100665, ISSN 210-6502, https://doi.org/10.1016/j.swevo.2020.100665.<BR>
+&nbsp;  &nbsp;  2.	Mulchandani, K., Singh J.S., and Mulchandani, K., "Determining Supply Chain Effectiveness for Indian MSMEs: A Structural Equation Modelling Approach." Asia Pacific Management Review 28.2 (2023): 90-8. ProQuest. Web. 4 Dec. 2023.<BR>
+&nbsp;  &nbsp;  3.	King, A.P., Eckersley, A.K, 2019, Inferential Statistics II: Parametric Hypothesis Testing, Statistics for Biomedical Engineers and Scientists, Student's t-Test - an overview | ScienceDirect Topics.<BR>
+&nbsp;  &nbsp;  4.	Massachusetts Institute of Technology, 2023, URL: https://libguides.mit.edu/citing. <BR>
+&nbsp;  &nbsp;  5.	Santini, A., 2018, The Importance of Referencing, National Library of Medicine, PMCID: PMC5953266, PMID: 29967893, URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5953266/. <BR>
+&nbsp;  &nbsp;  7.	Mishra P, Singh U, Pandey CM, Mishra P, Pandey G. Application of student's t-test, analysis of variance, and covariance. Ann Card Anaesth. 2019 Oct-Dec;22(4):407-411. doi: 10.4103/aca.ACA_94_19. PMID: 31621677; PMCID: PMC6813708.<BR>
+&nbsp;  &nbsp;  8.	Bluman, A. (2018), Testing the differences between Two means, Two Proportions, and Two Variances, Elementary Statistics: a step-by-step approach. In Bluman, A., Descriptive and Inferential Statistics, (pp. 488-490)<BR>
+&nbsp;  &nbsp;  9. Williamson, K., 2002, The beginning stages of research, Good Hypothesis, Research Methods for Cyber Security, 2017, URL: https://www.sciencedirect.com/topics/computer-science/good-hypothesis
+
+<BR>
+<FONT SIZE=2, color="black">
+<B>V. APPENDIX</B><BR>
+&nbsp;  &nbsp;  An R Markdown report is enclosed in the submission. The name of the file is Project4_Jayakumar.rmd<BR>
